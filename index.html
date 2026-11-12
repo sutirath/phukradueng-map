@@ -1,0 +1,1202 @@
+<!doctype html>
+<html lang="th"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#2b7070">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ภูกระดึง">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>แผนที่ภูกระดึง</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap">
+<style>
+/* Layout (mobile first): สมุดบันทึกทริปที่มีชีวิต แผนที่เต็มจอ แถบไทม์ไลน์ของวันลอยเป็นกระจกเหนือแผนที่ การ์ดสถานที่อยู่ใต้แผนที่ เมนูอยู่ล่างสุด
+   ธีมเดียว (สว่าง) ตามระบบดีไซน์: โครมสีทีล สีมีความหมายเดียว ฟ้า=เลือก เขียวมรกต=ไปแล้ว ส้ม=กด อำพัน=ต้องทำ แดง=อันตราย */
+:root{
+  --primary:#4a9e9e; --primary-deep:#2b7070; --lake:#6bb6d6; --fern:#5b8c5a; --sand:#f2e7d5;
+  --sky:#0ea5e9; --sky-600:#0284c7; --sky-700:#0369a1; --sky-200:#bae6fd;
+  --emerald:#10b981; --emerald-600:#059669; --emerald-800:#065f46;
+  --danger:#ef4444; --active:#f97316; --amber:#f59e0b;
+  --ink:#111827; --body-text:#374151; --muted:#6b7280; --border:#d1d5db;
+  --surface:#ffffff; --surface-subtle:#f9fafb; --page:#f8fafc;
+  --m-nature:#5b8c5a; --m-water:#0e7490; --m-sights:#7c3aed; --m-transport:#475569;
+  --plateau:#e1ecd6; --forest:#c9dcbf; --rock:#d8c29d; --rock-deep:#b0976c; --mapbg:#eef4f3;
+  --shadow-xs:0 1px 2px rgba(0,0,0,.08);
+  --shadow-md:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
+  --shadow-lg:0 10px 15px rgba(0,0,0,.1),0 4px 6px rgba(0,0,0,.05);
+  --font:Inter,"Noto Sans Thai",system-ui,sans-serif;
+  --gl:max(16px,env(safe-area-inset-left,0px)); --gr:max(16px,env(safe-area-inset-right,0px));
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--page);color:var(--body-text);font-family:var(--font);font-size:.875rem;line-height:1.6;overflow:hidden}
+h1,h2,h3{margin:0;color:var(--ink);text-wrap:balance}
+p{margin:0}
+button{font-family:var(--font);font-size:.875rem}
+button{transition:transform .2s ease-in-out,background-color .2s,box-shadow .2s}
+button:active{transform:scale(.95)}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+
+.app{height:100%;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"head" "main" "nav"}
+.head,.main,.nav{min-width:0}
+.head{grid-area:head;padding:8px var(--gr) 8px var(--gl);display:flex;align-items:baseline;gap:10px;border-bottom:1px solid var(--border);background:var(--surface)}
+.head h1{font-size:1.25rem;font-weight:700;line-height:1.3;letter-spacing:-.01em}
+.head .sub{font-size:.75rem;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.main{grid-area:main;min-height:0;position:relative}
+.view{height:100%}
+.scroll{overflow-y:auto;-webkit-overflow-scrolling:touch}
+
+.nav{grid-area:nav;display:flex;background:var(--surface);border-top:1px solid var(--border);padding:0 var(--gr) 0 var(--gl)}
+.nav a{flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:var(--muted);text-decoration:none;font-size:.75rem;font-weight:500;border-top:3px solid transparent;margin-top:-1px}
+.nav a svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav a[aria-current="page"]{color:var(--primary-deep);border-top-color:var(--primary);font-weight:600}
+
+/* map view */
+.mapview{display:flex;flex-direction:column}
+.mapbox{flex:1;min-height:0;position:relative;background:var(--mapbg);overflow:hidden}
+#map{display:block;width:100%;height:100%;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+#map.drag{cursor:grabbing}
+
+/* timeline strip: glass chrome over the map */
+.strip{position:absolute;top:8px;left:var(--gl);right:var(--gr);display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
+  padding:8px 6px 6px;gap:6px;border-radius:10px;background:rgba(255,255,255,.3);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:var(--shadow-md)}
+.strip::-webkit-scrollbar{display:none}
+.stop{position:relative;flex:none;min-height:32px;border:0;border-radius:6px;padding:2px 10px;cursor:pointer;text-align:left;
+  background:var(--c);color:#fff;display:flex;flex-direction:column;justify-content:center;line-height:1.3}
+.stop .t{font-weight:600;font-size:.8125rem;white-space:nowrap}
+.stop .s{display:none}
+.stop .badge{position:absolute;top:-7px;right:-3px;line-height:1.35;background:var(--surface);color:var(--ink);border-radius:9999px;padding:0 6px;font-size:.6875rem;font-weight:600;box-shadow:var(--shadow-xs);font-variant-numeric:tabular-nums;white-space:nowrap}
+.stop.all{background:var(--surface);color:var(--ink);justify-content:center;font-weight:600;font-size:.8125rem}
+.stop:hover{transform:scale(1.03)}
+.stop:active{transform:scale(.95)}
+.stop[aria-pressed="true"]{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--c),var(--shadow-lg)}
+.stop.all[aria-pressed="true"]{--c:var(--primary-deep)}
+.stop[aria-pressed="true"]::after{content:"";position:absolute;left:50%;bottom:-9px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--c)}
+
+.app.full{grid-template-rows:minmax(0,1fr);grid-template-areas:"main"}
+.app.full .head,.app.full .nav,.app.full .sheet{display:none}
+.minibar{display:none;position:absolute;left:var(--gl);bottom:26px;max-width:calc(100% - var(--gl) - var(--gr) - 56px);min-height:44px;padding:0 14px;border:0;border-radius:12px;
+  background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:var(--shadow-lg);color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.app.full .minibar{display:block}
+.zoom button[aria-pressed="true"],.zoom button[aria-pressed="true"]:hover{background:var(--primary-deep);color:#fff}
+.zoom{position:absolute;right:var(--gr);bottom:26px;display:flex;flex-direction:column;gap:8px}
+.zoom button{width:44px;height:44px;border-radius:50%;box-shadow:var(--shadow-lg);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);background:rgba(255,255,255,.92);color:var(--body-text);border:0;font-size:1.25rem;font-weight:500;cursor:pointer;display:grid;place-items:center}
+.zoom button:hover{background:#fff}
+
+.zoom button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.sheet{flex:none;max-height:50%;overflow-y:auto;background:var(--surface);border-radius:16px 16px 0 0;margin-top:-14px;position:relative;z-index:3;box-shadow:0 -4px 14px rgba(0,0,0,.1);
+  padding:12px var(--gr) 12px var(--gl);display:flex;flex-direction:column;gap:10px}
+.sheet.open{max-height:82%}
+.sheet.tall{max-height:82%}
+.sheet{transition:max-height .34s cubic-bezier(.22,.8,.24,1)}
+.grab{flex:none;align-self:stretch;height:28px;margin:-12px 0 -8px;border:0;background:transparent;display:grid;place-items:center;cursor:pointer;padding:0;touch-action:none}
+.grab i{width:44px;height:5px;border-radius:9999px;background:var(--border)}
+.grab:active{transform:none}
+.peek{display:block;flex:none;border:0;background:transparent;text-align:left;font-weight:600;font-size:1rem;line-height:36px;color:var(--ink);height:36px;max-height:0;opacity:0;margin-bottom:-10px;padding:0;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  transition:max-height .34s cubic-bezier(.22,.8,.24,1),opacity .25s,margin-bottom .34s}
+.sheet.mini{max-height:76px;overflow:hidden}
+.sheet.mini .peek{max-height:36px;opacity:1;margin-bottom:0}
+.sheet.mini>*:not(.grab):not(.peek){opacity:0;pointer-events:none}
+.sheet>*:not(.grab):not(.peek){transition:opacity .25s}
+@media (prefers-reduced-motion:reduce){.sheet,.peek,.sheet>*{transition:none!important}}
+.back{align-self:flex-start;min-height:36px;border:0;background:transparent;color:var(--primary-deep);font-weight:600;padding:0 10px 0 0;cursor:pointer}
+.detail{display:flex;flex-direction:column;gap:6px}
+.figure{margin:0 0 4px;position:relative;border-radius:8px;overflow:hidden;aspect-ratio:320/92;max-width:100%;background:var(--surface-subtle)}
+.figure svg,.figure img{display:block;width:100%;height:100%;object-fit:cover}
+.figure figcaption a{color:inherit;text-decoration:none}
+.credits{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px;font-size:.75rem;color:var(--muted)}
+.credits a{color:var(--primary-deep)}
+.figure figcaption{position:absolute;right:6px;bottom:6px;max-width:calc(100% - 12px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(255,255,255,.9);color:var(--body-text);border-radius:9999px;padding:0 8px;font-size:.6875rem;font-weight:500}
+.detail .row1{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.detail h2{font-size:1.25rem;font-weight:700;line-height:1.3;letter-spacing:-.01em}
+.step{display:flex;gap:4px;flex:none}
+.step button{width:40px;height:40px;border-radius:8px;border:0;background:transparent;color:var(--body-text);cursor:pointer;display:grid;place-items:center}
+.step button:hover{background:rgba(74,158,158,.1)}
+.step svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tag{font-size:.75rem;font-weight:500;border-radius:9999px;padding:1px 8px;color:#fff;background:var(--tc,var(--muted))}
+.tag.sun{background:#fef3c7;color:#78350f;box-shadow:inset 0 0 0 1px #fcd34d}
+.dist{font-size:.75rem;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.detail .desc{color:var(--body-text)}
+.detail .tip{color:var(--muted)}
+.visit{display:flex;align-items:center;gap:10px;min-height:44px;cursor:pointer;font-weight:500;color:var(--ink);align-self:flex-start;padding-right:8px;border-radius:8px}
+.visit:active{background:rgba(249,115,22,.1)}
+.visit input{width:22px;height:22px;accent-color:var(--emerald);flex:none;margin:0}
+.visit.on{color:var(--emerald-800)}
+.visit.on input{animation:pop .3s ease-out}
+@keyframes pop{0%{transform:scale(.7)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+.listtoggle{align-self:flex-start;min-height:44px;padding:8px 16px;border-radius:8px;border:1px solid rgba(74,158,158,.4);background:rgba(74,158,158,.1);color:var(--primary-deep);font-weight:500;cursor:pointer}
+.listtoggle:hover{background:rgba(74,158,158,.2)}
+.listwrap{display:flex;flex-direction:column;gap:12px}
+.chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;font-weight:500;color:var(--body-text);background:var(--surface);border:1px solid var(--border);
+  border-radius:9999px;min-height:40px;padding:0 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.chip .dot{width:10px;height:10px;border-radius:50%;background:var(--dot)}
+.chip[aria-pressed="true"]{background:rgba(14,165,233,.1);border-color:var(--sky-600);color:var(--sky-700);box-shadow:0 0 0 1px var(--sky-600)}
+.list{display:flex;flex-direction:column;gap:12px}
+.group h3{font-size:.75rem;font-weight:500;color:var(--muted);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.group h3 i{width:10px;height:10px;border-radius:50%;background:var(--dot)}
+.items{display:flex;flex-wrap:wrap;gap:8px}
+.place{font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--border);border-radius:8px;min-height:40px;padding:0 12px;cursor:pointer;box-shadow:var(--shadow-xs)}
+.place:active{background:rgba(249,115,22,.1)}
+.place.done{background:rgba(16,185,129,.1);color:var(--muted);text-decoration:line-through}
+.place.done::before{content:"✓ ";color:var(--emerald-600);text-decoration:none;display:inline-block}
+.place[aria-current="true"]{background:rgba(14,165,233,.1);border-color:transparent;box-shadow:0 0 0 2px #fff,0 0 0 4px var(--sky)}
+.place.link{min-height:36px;border-radius:4px;border-color:var(--sky-200);color:var(--sky-700);box-shadow:none}
+
+/* SVG map */
+.plateau-rock{fill:var(--rock);stroke:var(--rock-deep);stroke-width:2}
+.plateau-top{fill:var(--plateau)}
+.forest{fill:var(--forest)}
+.stream{fill:none;stroke:var(--lake);stroke-width:3;stroke-linecap:round}
+.tree{fill:var(--fern);opacity:.35}
+.trail{fill:none;stroke:#8a9a94;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1 8}
+.trail.main{stroke-dasharray:none;stroke:var(--primary);stroke-width:4.5}
+.trail.climb{stroke-dasharray:10 7;stroke:var(--primary);stroke-width:4}
+.trail.hot{stroke-width:4.5}
+.trail.hot.cliff{stroke:var(--m-nature)} .trail.hot.water{stroke:var(--m-water)}
+.trail.dim{opacity:.2}
+#trails.muted .trail{opacity:.3}
+.rcase{fill:none;stroke:#fff;stroke-width:11;stroke-linecap:round;stroke-linejoin:round}
+.rline{fill:none;stroke-width:6.5;stroke-linecap:round;stroke-linejoin:round}
+.rbox{fill:#fff;stroke-width:1.5}
+.rarr{fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.seq circle{fill:#111827;stroke:#fff;stroke-width:1.5}
+.seq text{font:700 11px var(--font);fill:#fff}
+.sam{fill:var(--surface);stroke:var(--primary);stroke-width:2}
+.lbl{font:500 17px var(--font);fill:var(--ink);paint-order:stroke;stroke:var(--plateau);stroke-width:5px;stroke-linejoin:round;pointer-events:none}
+.lbl.out{stroke:var(--mapbg)}
+.samlbl{font:500 15px var(--font);fill:var(--body-text);paint-order:stroke;stroke:var(--mapbg);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+.far .samlbl{display:none}
+.maptxt{font:500 14px var(--font);fill:var(--muted);pointer-events:none}
+.pin{cursor:pointer;outline:none}
+.pin .body{transform-box:fill-box;transform-origin:center;transition:transform .2s ease-in-out}
+.pin .disc{stroke:#fff;stroke-width:2}
+.pin .glyph{fill:#fff}
+.pin .glyph.ln{fill:none;stroke:#fff;stroke-width:2.2}
+.pin .check{display:none}
+.pin .check circle{fill:var(--emerald-600);stroke:#fff;stroke-width:1.5}
+.pin .check path{fill:none;stroke:#fff;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pin .pill{fill:#fff;stroke:var(--border);stroke-width:1}
+@media (hover:hover){.pin:hover .body{transform:translateY(-2px)}}
+.pin:focus-visible .disc{stroke:var(--sky-600);stroke-width:3.5}
+.pin.done .disc{fill:#e5e7eb}
+.pin.done .glyph{fill:var(--body-text)}
+.pin.done .glyph.ln{fill:none;stroke:var(--body-text)}
+.pin.done .check{display:block}
+.pin.sel .disc{stroke:var(--sky-600);stroke-width:3.5}
+.pin.sel .body{transform:scale(1.15)}
+.pin.sel .lbl{font-weight:600;stroke:none}
+.pin.dim{opacity:.25}
+.far .pin:not(.sel) .lbl{display:none}
+.cat-cliff .disc{fill:var(--m-nature)} .cat-water .disc{fill:var(--m-water)}
+.cat-pond .disc{fill:var(--m-sights)} .cat-base .disc{fill:var(--m-transport)}
+
+/* plan + prep views */
+.page{max-width:820px;margin:0 auto;padding:16px var(--gr) 28px var(--gl);display:flex;flex-direction:column;gap:16px}
+.eyebrow{font-size:.75rem;font-weight:500;color:var(--muted)}
+.page h2.trip{font-size:clamp(1.4rem,6vw,1.875rem);font-weight:700;line-height:1.2;letter-spacing:-.02em}
+.facts{display:flex;flex-wrap:wrap;gap:4px 18px;margin:0;padding:0;list-style:none;color:var(--muted)}
+.facts b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
+.daytabs{position:sticky;top:0;z-index:2;background:var(--page);display:flex;gap:8px;overflow-x:auto;padding:8px 2px;scrollbar-width:none}
+.daytabs::-webkit-scrollbar{display:none}
+.daytabs .chip{min-height:44px;border-radius:8px}
+.daytabs .chip[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:#fff;box-shadow:var(--shadow-md)}
+.card{background:var(--surface);border-radius:8px;box-shadow:var(--shadow-md);padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h3{font-size:1rem;font-weight:600;line-height:1.4}
+.dayhead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:2px 16px}
+.dayhead h3{font-size:1.25rem;font-weight:700;line-height:1.3;letter-spacing:-.01em;color:var(--c)}
+.dayhead h3 small{font-size:.75rem;font-weight:500;color:var(--muted);margin-left:8px;letter-spacing:0}
+.dayhead .total{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.rows{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.rows li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 14px;padding:10px 0;border-top:1px solid #e5e7eb;align-items:baseline}
+.rows .time{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;grid-column:1;grid-row:1}
+.rows .km{color:var(--muted);font-size:.75rem;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;grid-column:2;grid-row:1}
+.rows .what{grid-column:1 / -1;grid-row:2}
+.rows .rest{color:var(--primary-deep);font-weight:600}
+.rows .stops{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.dayplan{display:flex;flex-direction:column;gap:8px}
+.stats{margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:10px 4px;border-radius:12px;background:var(--surface-subtle);text-align:center}
+.stats dd{margin:0;font-size:1.125rem;font-weight:700;color:var(--ink);line-height:1.3;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stats dd small{font-size:.75rem;font-weight:500;color:var(--body-text)}
+.stats dt{font-size:.75rem;font-weight:500;color:var(--muted)}
+.dayplan .dayhead h3{font-size:1rem;line-height:1.4;letter-spacing:0}
+.rows.mini li{grid-template-columns:5.9rem minmax(0,1fr);gap:2px 10px;padding:8px 0}
+.rows.mini .time{grid-column:1;grid-row:1;font-size:.8125rem}
+.rows.mini .what{grid-column:2;grid-row:1}
+.rows.mini .km{grid-column:2;grid-row:2;text-align:left}
+.rows.mini .stops{margin-top:6px}
+.stats.three{grid-template-columns:repeat(3,minmax(0,1fr));background:var(--surface);box-shadow:var(--shadow-md)}
+.stats.three dd{font-size:1rem}
+.daytabs .chip{flex:1 0 auto;flex-direction:column;align-items:flex-start;gap:0;padding:6px 14px;line-height:1.35;min-height:52px;justify-content:center}
+.daytabs .chip b{font-weight:600;color:var(--ink)}
+.daytabs .chip span{font-size:.75rem;color:var(--muted)}
+.daytabs .chip[aria-pressed="true"] b,.daytabs .chip[aria-pressed="true"] span{color:#fff}
+.dayhero{gap:12px;padding:16px}
+.dayhero .dayhead h3{font-size:1.5rem;line-height:1.25;letter-spacing:-.01em;color:var(--c)}
+.dayhero .total{color:var(--muted);font-weight:500}
+.btn{align-self:stretch;min-height:44px;border:0;border-radius:8px;background:var(--primary-deep);color:#fff;font-weight:500;padding:8px 16px;cursor:pointer}
+.btn:hover{opacity:.9}
+.tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.tl>li{position:relative;display:grid;grid-template-columns:40px minmax(0,1fr);gap:12px;padding-bottom:14px}
+.tl>li::before{content:"";position:absolute;left:19px;top:40px;bottom:0;width:2px;background:var(--c);opacity:.3;border-radius:1px}
+.tl>li:last-child::before{display:none}
+.tdot{width:40px;height:40px;border-radius:50%;background:var(--surface);box-shadow:0 0 0 2px var(--c),var(--shadow-xs);display:grid;place-items:center;font-size:1.125rem;line-height:1}
+.tbody{background:var(--surface);border-radius:8px;box-shadow:var(--shadow-md);padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.ttop{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px}
+.ttop .time{font-size:1rem;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap;margin-right:auto}
+.pill{font-size:.75rem;font-weight:500;border-radius:9999px;padding:1px 8px;background:var(--surface-subtle);color:var(--body-text);box-shadow:inset 0 0 0 1px var(--border);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill.restp{background:rgba(74,158,158,.1);color:var(--primary-deep);box-shadow:inset 0 0 0 1px rgba(74,158,158,.4)}
+.tl .what{font-size:.9375rem;color:var(--ink);line-height:1.55}
+.tl .notes{margin:2px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:2px;color:var(--body-text)}
+.tl .notes li::before{content:"• ";color:var(--c);font-weight:700}
+.tl .stops{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.tl>li.rest .tdot{box-shadow:0 0 0 2px var(--border)}
+.tl>li.rest .tbody{background:transparent;box-shadow:none;padding:6px 0}
+.tl>li.rest .what{color:var(--muted)}
+.water{fill:#bfe2ec}
+.forest{fill:#b9d1ab}
+.plateau-rock{fill:#cdb48b}
+.dlbl{font:600 12px var(--font);fill:#7f1d1d;text-anchor:middle;paint-order:stroke;stroke:rgba(255,255,255,.92);stroke-width:3.5px;stroke-linejoin:round;pointer-events:none}
+.lbl.hide,.samlbl.hide{display:none}
+.pin .guide circle{fill:#f97316;stroke:#fff;stroke-width:1.5}
+.pin .guide path{fill:none;stroke:#fff;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.tag.guide{background:#ffedd5;color:#7c2d12;box-shadow:inset 0 0 0 1px #fdba74}
+.tag.self{background:#fef9c3;color:#713f12;box-shadow:inset 0 0 0 1px #fde047}
+.checks{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.checks label{display:flex;gap:12px;align-items:center;cursor:pointer;min-height:44px;color:var(--ink);border-radius:8px}
+.checks label:active{background:rgba(249,115,22,.1)}
+.checks input{width:22px;height:22px;accent-color:var(--emerald);flex:none;margin:0}
+.checks input:checked+span{color:var(--muted);text-decoration:line-through}
+.steps{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:8px}
+.steps b{font-weight:600;color:var(--ink)}
+.links{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.links li{min-height:44px;display:flex;flex-wrap:wrap;align-items:center;gap:0 8px}
+.links a{color:var(--primary-deep);font-weight:500;overflow-wrap:anywhere}
+.lead{color:var(--muted)}
+.climb{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px 0;counter-reset:s}
+.climb li{counter-increment:s;display:flex;align-items:center;font-weight:500;color:var(--ink)}
+.climb li::before{content:counter(s);width:22px;height:22px;border-radius:50%;background:var(--primary-deep);color:#fff;
+  font-size:.75rem;font-weight:600;display:inline-flex;align-items:center;justify-content:center;margin-right:6px}
+.climb li:not(:last-child)::after{content:"";width:14px;border-top:2px dashed var(--border);margin:0 6px}
+.prep{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
+.prep b{font-weight:600;color:var(--ink)}
+.foot{font-size:.75rem;color:var(--muted)}
+
+@media (prefers-reduced-motion:reduce){
+  button,.pin .body{transition:none}
+  button:active,.stop:hover,.stop:active{transform:none}
+  .pin.sel .body,.pin:hover .body{transform:none}
+  .visit.on input{animation:none}
+}
+
+@media (min-width:900px){
+  .app{grid-template-rows:auto minmax(0,1fr);grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"head nav" "main main"}
+  .head{padding-block:12px}
+  .head h1{font-size:1.875rem;line-height:1.2;letter-spacing:-.02em}
+  .nav{border-top:0;border-bottom:1px solid var(--border);padding-left:0}
+  .nav a{flex:none;flex-direction:row;gap:8px;min-height:0;padding:0 16px;font-size:.875rem;border-top:0;margin:0;border-bottom:3px solid transparent}
+  .nav a[aria-current="page"]{border-bottom-color:var(--primary)}
+  .nav a svg{width:20px;height:20px}
+  .mapview{flex-direction:row}
+  .strip{right:auto;max-width:calc(100% - 32px)}
+  .grab,.peek{display:none}
+  .sheet.mini{overflow-y:auto}
+  .sheet.mini>*:not(.grab):not(.peek){opacity:1;pointer-events:auto}
+  .zoom{bottom:16px}
+  .sheet,.sheet.open,.sheet.tall,.sheet.mini{transition:none;border-radius:0;margin-top:0;box-shadow:none;width:380px;max-height:none;height:100%;border-top:0;border-left:1px solid var(--border);padding:24px;gap:16px}
+  .listtoggle#listtoggle{display:none}
+  .figure{aspect-ratio:320/120}
+  .listwrap[hidden]{display:flex!important}
+  .chips{flex-wrap:wrap}
+  .rows li{grid-template-columns:7.6em minmax(0,1fr) auto}
+  .rows .what{grid-column:2;grid-row:1}
+  .rows .km{grid-column:3}
+  .two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+  .card{padding:16px}
+  .card:hover{box-shadow:var(--shadow-lg)}
+}
+</style>
+
+<div class="app" id="app">
+  <header class="head">
+    <h1>ภูกระดึง</h1>
+    <p class="sub">ทริป 10–12 ธ.ค. 2569 · อุทยานแห่งชาติภูกระดึง จ.เลย</p>
+    <span class="netchip" id="netchip" hidden>ออฟไลน์</span>
+    <button class="installbtn" id="installbtn" type="button" hidden>ติดตั้งแอป</button>
+  </header>
+
+  <main class="main">
+    <!-- แผนที่ -->
+    <section class="view mapview" id="view-map" aria-label="แผนที่">
+      <div class="mapbox" id="mapbox">
+        <svg id="map" viewBox="0 0 1080 800" role="group" aria-label="แผนที่ยอดภูกระดึง แตะหมุดเพื่อดูรายละเอียด ลากเพื่อเลื่อน">
+          <defs>
+            <clipPath id="clipTop"><path d="M440 224C470 222 520 250 600 285C700 330 850 330 960 330C1080 400 1200 540 1300 640C1360 700 1420 760 1450 880C1480 960 1500 1010 1500 1060C1480 1110 1400 1140 1300 1170C1150 1200 1000 1230 850 1260C700 1290 520 1320 380 1315C290 1310 220 1280 170 1220C120 1150 130 1030 135 950C140 870 120 800 140 740C160 680 230 640 330 620C440 600 430 500 400 400C380 330 400 260 440 224Z"/></clipPath>
+            <path id="tree" d="M0 -11L5 -2H2.5L7 6H1.2V10H-1.2V6H-7L-2.5 -2H-5Z"/>
+          </defs>
+          <g transform="scale(.55)">
+            <path class="plateau-rock" d="M440 224C470 222 520 250 600 285C700 330 850 330 960 330C1080 400 1200 540 1300 640C1360 700 1420 760 1450 880C1480 960 1500 1010 1500 1060C1480 1110 1400 1140 1300 1170C1150 1200 1000 1230 850 1260C700 1290 520 1320 380 1315C290 1310 220 1280 170 1220C120 1150 130 1030 135 950C140 870 120 800 140 740C160 680 230 640 330 620C440 600 430 500 400 400C380 330 400 260 440 224Z" transform="translate(0 24)"/>
+            <path class="forest" d="M440 224C470 222 520 250 600 285C700 330 850 330 960 330C1080 400 1200 540 1300 640C1360 700 1420 760 1450 880C1480 960 1500 1010 1500 1060C1480 1110 1400 1140 1300 1170C1150 1200 1000 1230 850 1260C700 1290 520 1320 380 1315C290 1310 220 1280 170 1220C120 1150 130 1030 135 950C140 870 120 800 140 740C160 680 230 640 330 620C440 600 430 500 400 400C380 330 400 260 440 224Z"/>
+            <g clip-path="url(#clipTop)">
+              <path class="plateau-top" d="M250 960C400 900 600 840 800 860C900 870 980 880 1060 860C1120 800 1160 720 1260 690C1330 690 1400 760 1440 860C1480 960 1500 1010 1500 1060C1480 1110 1400 1140 1300 1170C1150 1200 1000 1230 850 1260C700 1290 520 1320 380 1315C290 1310 220 1280 190 1230C230 1130 240 1040 250 960Z"/>
+              <path class="water" d="M420 245C440 300 470 360 480 450C490 520 520 580 600 610C700 640 790 650 810 700C780 770 700 790 620 760C560 740 520 690 480 690C400 690 300 690 190 640C240 620 320 620 360 600C420 560 400 470 380 380C370 320 380 270 420 245Z"/>
+            </g>
+            <path d="M440 224C470 222 520 250 600 285C700 330 850 330 960 330C1080 400 1200 540 1300 640C1360 700 1420 760 1450 880C1480 960 1500 1010 1500 1060C1480 1110 1400 1140 1300 1170C1150 1200 1000 1230 850 1260C700 1290 520 1320 380 1315C290 1310 220 1280 170 1220C120 1150 130 1030 135 950C140 870 120 800 140 740C160 680 230 640 330 620C440 600 430 500 400 400C380 330 400 260 440 224Z" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round" opacity=".85"/>
+          </g>
+          <g id="trees"></g>
+          <text class="maptxt" x="420" y="262" text-anchor="middle">เขตป่าดิบเขา</text>
+          <text class="maptxt" x="190" y="478" text-anchor="middle">เขตป่าดิบเขา</text>
+          <text class="maptxt" x="330" y="580" text-anchor="middle">เขตทุ่งหญ้าและป่าสน</text>
+          <g id="trails"></g>
+          <g id="route" pointer-events="none"></g>
+          <g id="dlbls"></g>
+          <g id="sams"></g>
+          <g id="pins"></g>
+          <g transform="translate(70 150)">
+            <circle r="30" fill="#fff" opacity=".85"/>
+            <path d="M0 -24L7 0L0 -5L-7 0Z" fill="var(--danger)"/><path d="M0 24L7 0L0 5L-7 0Z" fill="var(--sky-600)"/>
+            <text class="maptxt" y="-31" text-anchor="middle" style="font-weight:700;fill:var(--ink)">N</text>
+          </g>
+          <text class="maptxt" x="540" y="792" text-anchor="middle">แผนผังตามแผนที่เส้นทางเดินเท้าของอุทยาน ไม่ตามมาตราส่วน</text>
+        </svg>
+        <div class="strip" id="strip" role="group" aria-label="วันในทริป"></div>
+        <div class="zoom">
+          <button type="button" id="zin" aria-label="ซูมเข้า">+</button>
+          <button type="button" id="zout" aria-label="ซูมออก">−</button>
+          <button type="button" id="zfit" aria-label="ดูทั้งภู"><svg viewBox="0 0 24 24"><path d="M3 18l6-9 4 5 3-4 5 8z"/></svg></button>
+          <button type="button" id="zfull" aria-label="ดูแผนที่เต็มจอ" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+        </div>
+        <button class="minibar" id="minibar" type="button"></button>
+        <div hidden>
+        </div>
+      </div>
+      <div class="sheet scroll" id="sheet">
+        <button class="grab" id="grab" type="button" aria-label="ขยายหรือย่อแผงข้อมูล" aria-expanded="false"><i></i></button>
+        <button class="peek" id="peek" type="button"></button>
+        <button class="back" id="backplan" type="button" hidden></button>
+        <section class="dayplan" id="dayplan" aria-label="แผนของวันที่เลือก" hidden></section>
+        <article class="detail" id="detail" aria-live="polite"></article>
+        <button class="listtoggle" id="listtoggle" type="button" aria-expanded="false">สถานที่ทั้งหมด</button>
+        <div class="listwrap" id="listwrap" hidden>
+          <div class="chips" id="chips" role="group" aria-label="กรองประเภทสถานที่"></div>
+          <div class="list" id="list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- แผนทริป -->
+    <section class="view scroll" id="view-plan" aria-label="แผนทริป" hidden>
+      <div class="page">
+        <div>
+          <p class="eyebrow">แผนเที่ยว · เดินทางคืน 9 ธ.ค.</p>
+          <h2 class="trip">ทริปภูกระดึง <span style="white-space:nowrap">10–12 ธันวาคม 2569</span></h2>
+        </div>
+        <dl class="stats three">
+          <div><dd>06.00–12.00</dd><dt>⬆️ เวลาขึ้นเขา</dt></div>
+          <div><dd>07.00–13.00</dd><dt>⬇️ เวลาลงเขา</dt></div>
+          <div><dd>~27<small> + 20 กม.</small></dd><dt>🥾 เดิน + 🚲 ปั่น</dt></div>
+        </dl>
+        <div class="daytabs" id="daytabs" role="group" aria-label="เลือกวัน"></div>
+        <section class="card dayhero" id="dayhero">
+          <div class="dayhead"><h3 id="daytitle"></h3><span class="total" id="daytotal"></span></div>
+          <dl class="stats" id="daystats"></dl>
+          <button class="btn" id="dayonmap" type="button">🗺️ ดูเส้นทางวันนี้บนแผนที่</button>
+        </section>
+        <ol class="tl" id="dayrows"></ol>
+      </div>
+    </section>
+
+    <!-- เตรียมตัว -->
+    <section class="view scroll" id="view-prep" aria-label="เตรียมตัว" hidden>
+      <div class="page">
+        <div class="two">
+          <section class="card">
+            <h3>ของใช้ที่จำเป็น</h3>
+            <ul class="checks" id="checks"></ul>
+          </section>
+          <section class="card">
+            <h3>ขั้นตอนลงทะเบียนที่ตีนภู</h3>
+            <ol class="steps">
+              <li><b>ด่านตรวจ 1</b> ซื้อตั๋วเข้าอุทยานฯ</li>
+              <li><b>ศูนย์ฯ ศรีฐาน</b> เช็กอิน ประกัน แสดงหลักฐานอบรม ฟังบรรยาย เข้า LINE OpenChat</li>
+              <li><b>ลูกหาบ</b> ชั่งและฝากสัมภาระ (รีบก่อนหมด)</li>
+              <li><b>ศาลาแผนที่</b> ดูเส้นทางและระดับความเสี่ยง</li>
+              <li><b>ด่านตรวจ 3</b> ผ่านการตรวจ เริ่มขึ้นเขา</li>
+            </ol>
+          </section>
+        </div>
+        <section class="card">
+          <h3>ลิงก์สำคัญ</h3>
+          <ul class="links">
+            <li>จองที่พัก <a href="https://nps.dnp.go.th" target="_blank" rel="noopener">nps.dnp.go.th</a></li>
+            <li>อบรมออนไลน์ (1) <a href="https://forms.gle/6VdA5gDPru8VUksy7" target="_blank" rel="noopener">forms.gle/6VdA5gDPru8VUksy7</a></li>
+            <li>อบรมออนไลน์ (2) <a href="https://forms.gle/mknvFuwaUZHaTLRM9" target="_blank" rel="noopener">forms.gle/mknvFuwaUZHaTLRM9</a></li>
+            <li>โทร 042-810833 (ประชาสัมพันธ์)</li>
+            <li>โทร 042-810834 (บ้านพัก/เต็นท์)</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h3>เวลาเข้าชมของอุทยาน</h3>
+          <p class="lead">ตามแผนที่เส้นทางเดินเท้าของอุทยานแห่งชาติภูกระดึง</p>
+          <ul class="prep">
+            <li><b>ขึ้นเขา</b> 06.00–12.00 น. · <b>ลงเขา</b> 07.00–13.00 น.</li>
+            <li><b>เข้าชมได้เอง</b> โซนหน้าผา เริ่ม 08.00 น. (ผาหล่มสักอยู่ได้ไม่เกิน 18.00 น.) · อ่างเก็บน้ำไพรัตน์–ธารไชย 06.30–17.00 น. · น้ำตกถ้ำใหญ่ 08.30–14.00 น.</li>
+            <li><b>ต้องมีเจ้าหน้าที่นำทาง (1 รอบ/วัน)</b> ผานกแอ่น 05.00–07.00 น. · น้ำตกเพ็ญพบใหม่ โผนพบ เพ็ญพบ 08.30–14.00 น.</li>
+            <li>กรณีเส้นทางไม่ปลอดภัย ไม่อนุญาตให้ใช้เส้นทาง</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h3>ทางขึ้นภู: ศรีฐาน → หลังแป</h3>
+          <p class="lead">เดินเท้าขึ้นเขา 5.5 กม. ราว 3–5 ชั่วโมง ทุก “ซำ” เป็นจุดพักที่มีร้านอาหาร น้ำดื่ม และห้องน้ำ จากหลังแปเดินทางราบต่อถึงศูนย์ฯ วังกวาง</p>
+          <ol class="climb">
+            <li>ศรีฐาน</li><li>ซำแฮก</li><li>ซำบอน</li><li>ซำกกกอก</li><li>ซำกกหว้า</li><li>ซำกกไผ่</li><li>ซำกกโดน</li><li>ซำแคร่</li><li>หลังแป</li>
+          </ol>
+          <p class="lead">ช่วงชันที่สุดคือช่วงแรกก่อนถึงซำแฮก และช่วงสุดท้ายจากซำแคร่ขึ้นหลังแป</p>
+        </section>
+        <section class="card">
+          <h3>ควรรู้ก่อนไป</h3>
+          <ul class="prep">
+            <li><b>ฤดูท่องเที่ยว</b> เปิด 1 ต.ค. – 31 พ.ค. ปิดฟื้นฟูธรรมชาติ 1 มิ.ย. – 30 ก.ย. ทุกปี</li>
+            <li><b>จุดสูงสุด</b> 1,316 ม. อากาศบนยอดภูหนาวจัดช่วงเช้ามืด</li>
+            <li><b>ใบเมเปิลแดง</b> สวยที่สุดช่วงปลาย ธ.ค. – ม.ค. ตามเส้นทางน้ำตก</li>
+            <li><b>ลูกหาบ</b> ฝากสัมภาระได้ที่ศรีฐาน คิดค่าบริการตามน้ำหนัก</li>
+          </ul>
+        </section>
+        <section class="card">
+          <h3>เครดิตภาพถ่าย</h3>
+          <p class="lead">ภาพถ่ายจาก Wikimedia Commons ครอบตัดและย่อขนาดให้พอดีการ์ด จุดที่ไม่มีภาพถ่ายใช้ภาพวาดประกอบ</p>
+          <ul class="credits" id="credits"></ul>
+        </section>
+        <p class="foot">ระยะทางเป็นค่าประมาณ ควรตรวจสอบประกาศ ค่าธรรมเนียม และการจองล่าสุดกับอุทยานแห่งชาติภูกระดึงก่อนเดินทาง</p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="nav" aria-label="เมนูหลัก">
+    <a href="#map" data-view="map"><svg viewBox="0 0 24 24"><path d="M9 4L3 6.5v13.5L9 17.5l6 2.5 6-2.5V4l-6 2.5zM9 4v13.5M15 6.5V20"/></svg>แผนที่</a>
+    <a href="#plan" data-view="plan"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>แผนทริป</a>
+    <a href="#prep" data-view="prep"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>เตรียมตัว</a>
+  </nav>
+</div>
+
+<script>
+(function(){
+var CATS={
+  cliff:{name:'หน้าผา',color:'var(--m-nature)'},
+  water:{name:'น้ำตก',color:'var(--m-water)'},
+  pond:{name:'อ่างน้ำและลาน',color:'var(--m-sights)'},
+  base:{name:'จุดบริการ',color:'var(--m-transport)'}
+};
+var P=[
+{id:'lomsak',n:'ผาหล่มสัก',c:'cliff',x:150,y:700,lp:'l',out:1,dist:'~9,360 ม.',seg:'จากผาแดง 2,420 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น. อยู่ได้ไม่เกิน 18.00 น.',
+  desc:'สัญลักษณ์ของภูกระดึง ชะง่อนหินทรายยื่นออกไปกลางอากาศ มีต้นสนโดดเดี่ยวยืนคู่กัน มองเห็นทิวเขาซ้อนกันไกลสุดตา',
+  tip:'เดินไป–กลับเกือบทั้งวัน ขากลับมืดแน่นอน ต้องพกไฟฉาย ตามกำหนดของอุทยานอยู่ที่ผาได้ไม่เกิน 18.00 น.'},
+{id:'daeng',n:'ผาแดง',c:'cliff',x:268,y:712,lp:'b',out:1,dist:'~6,940 ม.',seg:'จากผาเหยียบเมฆ 1,900 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+  desc:'หน้าผาหินทรายสีออกแดง จุดชมวิวกว้างก่อนถึงผาหล่มสัก คนน้อยกว่าและนั่งชมแสงเย็นได้สบาย',
+  tip:'ถ้าไปไม่ทันผาหล่มสัก ชมพระอาทิตย์ตกที่นี่แทนได้'},
+{id:'yiapmek',n:'ผาเหยียบเมฆ',c:'cliff',x:388,y:696,lp:'b',out:1,dist:'~5,040 ม.',seg:'จากผานาน้อย 1,560 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+  desc:'หน้าผาที่ช่วงเช้าหน้าหนาวมักมีทะเลหมอกลอยอยู่ใต้เท้า เป็นที่มาของชื่อ',
+  tip:'จุดพักกลางทางที่ดีบนเส้นทางเลียบผา'},
+{id:'nanoi',n:'ผานาน้อย',c:'cliff',x:495,y:668,lp:'b',out:1,dist:'~3,480 ม.',seg:'จากผาจำศีล 550 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+  desc:'จุดชมวิวมองลงไปเห็นที่ราบและทุ่งนาเล็ก ๆ ด้านล่างภู บรรยากาศเงียบสงบ',
+  tip:'แวะพักสั้น ๆ ระหว่างเดินเลียบผา'},
+{id:'jamsin',n:'ผาจำศีล',c:'cliff',x:595,y:648,lp:'t',dist:'~2,930 ม.',seg:'จากผาหมากดูก 670 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+  desc:'ลานหินริมผาเงียบ ๆ ถัดจากผาหมากดูก เหมาะนั่งพักรับลมและชมวิวทิศใต้',
+  tip:'เส้นทางเลียบผาช่วงนี้เดินและปั่นง่าย'},
+{id:'makduk',n:'ผาหมากดูก',c:'cliff',x:695,y:626,lp:'b',out:1,dist:'2,260 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+  desc:'จุดชมพระอาทิตย์ตกที่ใกล้ที่พักที่สุดในกลุ่มผาริมทางเลียบผา ลานหินกว้าง',
+  tip:'เหมาะกับวันแรกที่เพิ่งขึ้นถึงยอดภูและยังล้าอยู่'},
+{id:'maysa',n:'ผาเมษา',c:'cliff',x:775,y:606,lp:'b',out:1,dist:'~3,800 ม.',seg:'จากหลังแป 300 ม. · จากผาหมากดูก 1,900 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+  desc:'หน้าผาที่อยู่ใกล้หลังแปที่สุด เป็นจุดแรกของเส้นทางเลียบผาฝั่งตะวันออก',
+  tip:'เดินต่อจากหลังแปได้ไม่ไกล เหมาะแวะก่อนลงเขา'},
+{id:'nokaen',n:'ผานกแอ่น',c:'cliff',x:745,y:411,lp:'r',out:1,dist:'1,590 ม.',tag:'ชมพระอาทิตย์ขึ้น',acc:'guide',hrs:'05.00–07.00 น. (1 รอบ/วัน)',
+  desc:'จุดชมพระอาทิตย์ขึ้นยอดนิยม มองเห็นภูผาจิตและทะเลหมอกยามเช้า',
+  tip:'ต้องไปพร้อมเจ้าหน้าที่นำทาง รอบเดียวต่อวัน ออกเดินราวตี 5 อากาศหนาวจัด เตรียมเสื้อกันหนาวและไฟฉาย'},
+{id:'thamyai',n:'น้ำตกถ้ำใหญ่',s:'ถ้ำใหญ่',c:'water',x:480,y:510,lp:'l',dist:'~880 ม.',seg:'จากลานพระฯ 240 ม.',acc:'self',hrs:'08.30–14.00 น.',
+  desc:'จุดถ่ายรูปใบเมเปิลแดงที่มีชื่อที่สุดบนภู ธารน้ำไหลผ่านโขดหินและเพิงผาในป่าทึบ',
+  tip:'แสงสวยช่วงสาย ถ้ามาเพื่อใบเมเปิลควรมาปลาย ธ.ค. – ม.ค.'},
+{id:'penphop',n:'น้ำตกเพ็ญพบ',s:'เพ็ญพบ',c:'water',x:538,y:448,lp:'l',dist:'~2,020 ม.',seg:'จากน้ำตกถ้ำใหญ่ 1,140 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
+  desc:'น้ำตกม่านโค้งเหนือแอ่งน้ำ ตั้งชื่อตามการค้นพบในคืนวันเพ็ญ',
+  tip:'ต้องไปพร้อมเจ้าหน้าที่นำทาง รอบเดียวต่อวัน'},
+{id:'phonphop',n:'น้ำตกโผนพบ',s:'โผนพบ',c:'water',x:548,y:398,lp:'l',dist:'~2,360 ม.',seg:'จากน้ำตกเพ็ญพบ 340 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
+  desc:'น้ำตกหลายชั้นกลางป่า ตั้งชื่อตาม โผน กิ่งเพชร แชมป์โลกคนแรกของไทย',
+  tip:'ทางลงไปหน้าน้ำตกค่อนข้างลื่น เดินระวัง และต้องไปพร้อมเจ้าหน้าที่นำทาง'},
+{id:'penphopmai',n:'น้ำตกเพ็ญพบใหม่',s:'เพ็ญพบใหม่',c:'water',x:548,y:348,lp:'l',dist:'~2,570 ม.',seg:'จากน้ำตกโผนพบ 560 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
+  desc:'น้ำตกหน้าผาหินกว้าง มีต้นเมเปิลขึ้นริมธาร ช่วงปลายปีใบสีแดงร่วงลอยเต็มแอ่งน้ำ',
+  tip:'น้ำมากช่วงต้นฤดู (ต.ค. – พ.ย.) ต้องไปพร้อมเจ้าหน้าที่นำทาง'},
+{id:'lanpra',n:'ลานพระศรีนครินทร์',s:'ลานพระฯ',c:'pond',x:580,y:478,lp:'b',dist:'640 ม.',
+  desc:'ลานบนเส้นทางระหว่างศูนย์ฯ วังกวางกับกลุ่มน้ำตก มีรูปปั้นประดิษฐานอยู่ตามที่แผนที่ของอุทยานระบุ',
+  tip:'เป็นจุดแยกไปเส้นทางน้ำตก'},
+{id:'reservoir',n:'อ่างเก็บน้ำไพรัตน์–ธารไชย',s:'อ่างไพรัตน์ฯ',c:'pond',x:669,y:545,lp:'bl',dist:'350 ม.',acc:'self',hrs:'06.30–17.00 น.',
+  desc:'อ่างเก็บน้ำเล็ก ๆ ใกล้ที่พัก เช้าตรู่มีหมอกลอยเหนือผิวน้ำ เดินไปชมได้ง่ายก่อนเก็บของลงเขา',
+  tip:'ไปช่วง 06.30 – 07.30 น. ก่อนหมอกจาง เปิดให้เข้าชมถึง 17.00 น.'},
+{id:'wangkwang',n:'ศูนย์บริการฯ วังกวาง',s:'วังกวาง',c:'base',x:652,y:448,lp:'tl',dist:'จุดพักแรมบนยอดภู',
+  desc:'ศูนย์กลางของยอดภู มีลานกางเต็นท์ บ้านพัก เต็นท์ให้เช่า ร้านอาหาร และจุดเช่าจักรยาน มักมีกวางป่าเดินมาใกล้ ๆ',
+  tip:'เส้นทางเที่ยวทุกสายเริ่มและจบที่นี่'},
+{id:'langpae',n:'หลังแป',c:'base',x:815,y:540,lp:'r',out:1,dist:'3,500 ม.',seg:'จากศรีฐาน 5,500 ม.',
+  desc:'ขอบภูจุดที่ทางขึ้นมาบรรจบที่ราบ มีป้าย “ครั้งหนึ่งในชีวิต เราคือผู้พิชิตภูกระดึง” ให้ถ่ายรูปเป็นที่ระลึก',
+  tip:'จากนี้เป็นทางราบถึงวังกวาง 3,500 ม.'},
+{id:'sithan',n:'ศูนย์บริการฯ ศรีฐาน',s:'ศรีฐาน (ตีนภู)',c:'base',x:985,y:735,lp:'b',out:1,dist:'จุดเริ่มเดินขึ้นเขา',seg:'ถึงหลังแป 5,500 ม.',
+  desc:'ที่ทำการอุทยานฯ ด้านล่าง ลงทะเบียน ชำระค่าธรรมเนียม และชั่งสัมภาระฝากลูกหาบก่อนเริ่มเดิน',
+  tip:'เริ่มเดินแต่เช้าจะไม่ร้อนและมีเวลาพักตามซำ'}
+];
+var byId={};P.forEach(function(p){byId[p.id]=p});
+function $(id){return document.getElementById(id)}
+function h(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+var NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+var GLYPH={
+  cliff:'M-7.5 5.5L-1.5 -6L1.5 -1.5L3.5 -4.5L8 5.5Z',
+  water:'M0 -7.5C4 -2.5 6 0.5 6 3A6 6 0 0 1 -6 3C-6 0.5 -4 -2.5 0 -7.5Z',
+  base:'M-6.5 6V-1L0 -7L6.5 -1V6Z'
+};
+var filter='all', selected='wangkwang', dayHL=null, dayIdx=2, curView='map';
+var svg=$('map'), pins=$('pins'), pinEls={}, placeEls={};
+
+[[330,178],[348,192],[470,200],[505,216],[560,240],[598,266],[425,236],[385,300],[455,288],[482,322],[255,420],[285,452],[205,492],[140,508],[565,330],[640,362],[690,340],[215,524],[300,540],[160,562],[245,596],[290,630],[345,548],[480,562],[400,602],[525,596],[575,565],[705,545],[742,500],[772,522],[560,604],[450,626],[610,560],[720,590],[250,670]]
+  .forEach(function(t){el('use',{href:'#tree',class:'tree',transform:'translate('+t[0]+' '+t[1]+')'},$('trees'))});
+var EDGES={
+  climb:{d:'M985 735C960 715 940 685 900 650C860 620 830 575 815 540',cat:'base',cls:'climb',lbl:'5,500 ม.',at:.5,off:[-40,14]},
+  direct:{d:'M678 461C705 462 745 470 770 492C797 510 810 525 815 540',cat:'base',cls:'main',lbl:'3,500 ม.',at:.5},
+  nokaen:{d:'M678 461C710 455 735 440 745 411',cat:'cliff',lbl:'1,590 ม.',at:.5,off:[-10,6]},
+  lanpra:{d:'M678 461C655 472 615 480 580 478',cat:'water',lbl:'640 ม.',at:.5,off:[0,10]},
+  res:{d:'M678 461L669 545',cat:'pond',lbl:'350 ม.',at:.5,off:[-14,0]},
+  thamyai:{d:'M580 478C550 495 510 508 480 510',cat:'water',lbl:'240 ม.',at:.5,off:[0,-11]},
+  w1:{d:'M480 510L548 510C566 492 560 465 538 448',cat:'water',lbl:'1,140 ม.',at:.3,off:[0,11]},
+  w2:{d:'M538 448L548 398',cat:'water',lbl:'340 ม.',at:.5,off:[31,0]},
+  w3:{d:'M548 398L548 348',cat:'water',lbl:'560 ม.',at:.5,off:[31,0]},
+  w4:{d:'M548 348C610 350 625 420 580 478',cat:'water',lbl:'1,930 ม.',at:.4},
+  wkmak:{d:'M678 461L640 482C632 500 640 540 646 565C652 590 674 612 695 626',cat:'cliff',lbl:'2,260 ม.',at:.45,off:[-14,0]},
+  c1:{d:'M150 700C175 710 230 716 268 712',cat:'cliff',lbl:'2,420 ม.'},
+  c2:{d:'M268 712C320 710 360 702 388 696',cat:'cliff',lbl:'1,900 ม.'},
+  c3:{d:'M388 696C425 688 460 674 495 668',cat:'cliff',lbl:'1,560 ม.'},
+  c4:{d:'M495 668L595 648',cat:'cliff',lbl:'550 ม.',off:[0,-9]},
+  c5:{d:'M595 648L695 626',cat:'cliff',lbl:'670 ม.',off:[0,-9]},
+  c6:{d:'M695 626C725 622 752 614 775 606',cat:'cliff',lbl:'1,900 ม.',off:[0,-9]},
+  c7:{d:'M775 606L815 540',cat:'cliff',lbl:'300 ม.',off:[-24,-2]}
+};
+(function(){
+  var tr=$('trails'),dl=$('dlbls');
+  Object.keys(EDGES).forEach(function(k){
+    var e=EDGES[k],p=el('path',{d:e.d,class:'trail '+(e.cls||'')+' '+e.cat,'data-cat':e.cat},tr);
+    if(!e.lbl)return;
+    var L=p.getTotalLength(),at=L*(e.at||.5),pt=p.getPointAtLength(at),q=p.getPointAtLength(at+2),ang=Math.atan2(q.y-pt.y,q.x-pt.x)*180/Math.PI,o=e.off||[0,0];
+    if(ang>90||ang<-90)ang+=180;
+    e.lp={x:pt.x+o[0],y:pt.y+o[1]};
+    el('text',{class:'dlbl',transform:'translate('+(pt.x+o[0]).toFixed(1)+' '+(pt.y+o[1]).toFixed(1)+') rotate('+ang.toFixed(0)+')',y:4},dl).textContent=e.lbl;
+  });
+  var path=el('path',{d:EDGES.climb.d,fill:'none'},$('sams')),len=path.getTotalLength();
+  $('sams').removeChild(path);
+  ['ซำแฮก','ซำบอน','ซำกกกอก','ซำกกหว้า','ซำกกไผ่','ซำกกโดน','ซำแคร่'].forEach(function(name,i){
+    var pt=path.getPointAtLength(len*(i+1.5)/8.5),right=true;
+    el('circle',{class:'sam',cx:pt.x.toFixed(1),cy:pt.y.toFixed(1),r:5},$('sams'));
+    el('text',{class:'samlbl',x:(pt.x+(right?12:-12)).toFixed(1),y:(pt.y+5).toFixed(1),'text-anchor':right?'start':'end'},$('sams')).textContent=name;
+  });
+})();
+
+P.forEach(function(p){
+  var g=el('g',{class:'pin cat-'+p.c,transform:'translate('+p.x+' '+p.y+')',tabindex:0,role:'button','aria-label':p.n},pins);
+  el('circle',{r:26,fill:'transparent'},g);
+  var b=el('g',{class:'body'},g);
+  el('path',{class:'disc',d:'M0 21L-6 13.6A15 15 0 1 1 6 13.6Z'},b);
+  if(p.c==='pond') el('ellipse',{class:'glyph ln',rx:6.5,ry:4.2},b);
+  else el('path',{class:'glyph',d:GLYPH[p.c]},b);
+  if(p.acc==='guide'){var gd=el('g',{class:'guide'},b);el('circle',{cx:-11,cy:-11,r:6},gd);el('path',{d:'M-11 -14.5v4M-13.4 -9l2.4 -1.5l2.4 1.5'},gd)}
+  var ck=el('g',{class:'check'},b);el('circle',{cx:11,cy:-11,r:7.5},ck);el('path',{d:'M7.3 -11l2.6 2.6 4.6-5.2'},ck);
+  var pos={r:[23,6,'start'],l:[-23,6,'end'],t:[0,-25,'middle'],b:[0,42,'middle'],tl:[-8,-25,'end'],bl:[-8,42,'end'],br:[8,42,'start']}[p.lp];
+  el('text',{class:'lbl'+(p.out?' out':''),x:pos[0],y:pos[1],'text-anchor':pos[2]},g).textContent=p.s||p.n;
+  g.addEventListener('click',function(){select(p.id,true)});
+  g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();select(p.id,true)}});
+  pinEls[p.id]=g;
+});
+
+/* ---------- pan & zoom ---------- */
+var W=1080,H=800,view={cx:W/2,cy:H/2,z:1},cw=1,ch=1,anim=0;
+function measure(){var r=svg.getBoundingClientRect();cw=Math.max(1,r.width);ch=Math.max(1,r.height)}
+function baseW(){return Math.max(W,H*cw/ch)}
+function fillZ(){return Math.min(2.4,Math.max(1,baseW()/(H*cw/ch)))} // zoom at which the plateau fills the height
+function clampView(){
+  view.z=Math.min(4.5,Math.max(1,view.z));
+  var bw=baseW()/view.z,bh=bw*ch/cw;
+  view.cx=Math.min(Math.max(view.cx,0),W);
+  view.cy=Math.min(Math.max(view.cy,0),H);
+  return [bw,bh];
+}
+function draw(){queueDeclutter();var b=clampView();svg.classList.toggle('far',cw/b[0]<.5);svg.setAttribute('viewBox',(view.cx-b[0]/2).toFixed(1)+' '+(view.cy-b[1]/2).toFixed(1)+' '+b[0].toFixed(1)+' '+b[1].toFixed(1))}
+var dcq=0;
+function queueDeclutter(){if(!dcq)dcq=requestAnimationFrame(function(){dcq=0;declutter()})}
+/* ซ่อนป้ายชื่อที่ซ้อนกัน: เลือกก่อน > จุดของวันที่เลือก > จุดอื่น > ชื่อซำ (ตัวเลขระยะทางแสดงเสมอ) */
+function declutter(){
+  if($('view-map').hidden)return;
+  document.querySelectorAll('#pins .lbl,#sams .samlbl').forEach(function(n){n.classList.remove('hide')});
+  var rank=[],obst=[],placed=[];
+  P.forEach(function(p,i){
+    var g=pinEls[p.id],dim=g.classList.contains('dim');
+    obst.push({id:p.id,r:g.querySelector('.disc').getBoundingClientRect()});
+    rank.push({n:g.querySelector('.lbl'),id:p.id,i:i,k:p.id===selected?0:(dim?3:(dayHL&&dayHL.indexOf(p.id)>=0?1:2))});
+  });
+  rank.sort(function(a,b){return a.k-b.k||a.i-b.i});
+  function hit(a,b){return a.left<b.right-1&&a.right>b.left+1&&a.top<b.bottom-1&&a.bottom>b.top+1}
+  function place(n,id){
+    var r=n.getBoundingClientRect();if(!r.width)return;
+    if(obst.some(function(o){return o.id!==id&&hit(r,o.r)})||placed.some(function(q){return hit(r,q)}))n.classList.add('hide');else placed.push(r);
+  }
+  rank.forEach(function(x){if(x.k===0)placed.push(x.n.getBoundingClientRect());else place(x.n,x.id)});
+  document.querySelectorAll('#sams .samlbl').forEach(function(n){place(n,'')});
+}
+var flying=false;
+function flyTo(cx,cy,z){
+  cancelAnimationFrame(anim);flying=false;
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+  if(reduce){view={cx:cx,cy:cy,z:z};draw();return}
+  var a={cx:view.cx,cy:view.cy,z:view.z},t0=null;flying=true;
+  anim=requestAnimationFrame(function step(now){
+    if(t0===null)t0=now;
+    var t=Math.max(0,Math.min(1,(now-t0)/280)),e=1-Math.pow(1-t,3);
+    view={cx:a.cx+(cx-a.cx)*e,cy:a.cy+(cy-a.cy)*e,z:a.z+(z-a.z)*e};draw();
+    if(t<1)anim=requestAnimationFrame(step);else flying=false;
+  });
+}
+function zoomAt(px,py,nz){
+  var r=svg.getBoundingClientRect(),bw=baseW()/view.z,bh=bw*ch/cw;
+  var ux=view.cx-bw/2+(px-r.left)/cw*bw, uy=view.cy-bh/2+(py-r.top)/ch*bh;
+  nz=Math.min(4.5,Math.max(1,nz));
+  var nw=baseW()/nz,nh=nw*ch/cw;
+  view.z=nz;view.cx=ux-((px-r.left)/cw-.5)*nw;view.cy=uy-((py-r.top)/ch-.5)*nh;draw();
+}
+var ptrs={},moved=false,pinch=0;
+svg.addEventListener('pointerdown',function(e){
+  cancelAnimationFrame(anim);flying=false;
+  ptrs[e.pointerId]={x:e.clientX,y:e.clientY};
+  if(Object.keys(ptrs).length===1)moved=false;
+  pinch=0;
+});
+window.addEventListener('pointermove',function(e){
+  var p=ptrs[e.pointerId];if(!p)return;
+  var ids=Object.keys(ptrs);
+  if(ids.length===1){
+    var dx=e.clientX-p.x,dy=e.clientY-p.y;
+    if(!moved&&Math.abs(dx)+Math.abs(dy)<7)return;
+    moved=true;svg.classList.add('drag');
+    var k=baseW()/view.z/cw;view.cx-=dx*k;view.cy-=dy*k;draw();
+    p.x=e.clientX;p.y=e.clientY;
+  }else if(ids.length===2){
+    p.x=e.clientX;p.y=e.clientY;
+    var a=ptrs[ids[0]],b=ptrs[ids[1]],d=Math.hypot(a.x-b.x,a.y-b.y);
+    if(pinch)zoomAt((a.x+b.x)/2,(a.y+b.y)/2,view.z*d/pinch);
+    pinch=d;moved=true;
+  }
+});
+function up(e){delete ptrs[e.pointerId];pinch=0;svg.classList.remove('drag')}
+window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
+svg.addEventListener('click',function(e){if(moved){e.stopPropagation();e.preventDefault();moved=false}},true);
+svg.addEventListener('wheel',function(e){e.preventDefault();zoomAt(e.clientX,e.clientY,view.z*(e.deltaY<0?1.2:1/1.2))},{passive:false});
+$('zin').addEventListener('click',function(){flyTo(view.cx,view.cy,Math.min(4.5,view.z*1.5))});
+$('zout').addEventListener('click',function(){flyTo(view.cx,view.cy,Math.max(1,view.z/1.5))});
+$('zfit').addEventListener('click',function(){flyTo(W/2,H/2,1)});
+function homeZ(){return cw<600?Math.max(fillZ(),.62*baseW()/cw):1}
+function focusPin(id){var p=byId[id];measure();flyTo(p.x,p.y,Math.max(view.z,fillZ(),cw<600?2:1.3))}
+function recenter(){measure();if(flying)return;if(!(dayHL&&sheetMode==='plan')){view.cx=byId[selected].x;view.cy=byId[selected].y}draw()}
+function setFull(on){
+  $('app').classList.toggle('full',on);$('zfull').setAttribute('aria-pressed',on);
+  $('zfull').setAttribute('aria-label',on?'ออกจากโหมดเต็มจอ':'ดูแผนที่เต็มจอ');
+  $('zfull').firstChild.firstChild.setAttribute('d',on?'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5':'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5');
+  requestAnimationFrame(recenter);
+}
+$('zfull').addEventListener('click',function(){setFull(!$('app').classList.contains('full'))});
+$('minibar').addEventListener('click',function(){setFull(false)});
+if(window.ResizeObserver)new ResizeObserver(function(){if(curView==='map')recenter()}).observe($('mapbox'));
+else window.addEventListener('resize',function(){measure();draw()});
+
+/* ---------- filters, list, detail ---------- */
+var chips=$('chips');
+[['all','ทั้งหมด']].concat(Object.keys(CATS).map(function(k){return [k,CATS[k].name]})).forEach(function(c){
+  var b=h('button','chip');b.type='button';b.id='chip-'+c[0];
+  if(c[0]!=='all'){var d=h('span','dot');d.style.setProperty('--dot',CATS[c[0]].color);b.appendChild(d)}
+  b.appendChild(document.createTextNode(c[1]));
+  b.addEventListener('click',function(){filter=c[0];applyFilter()});
+  chips.appendChild(b);
+});
+var list=$('list'),groups={};
+Object.keys(CATS).forEach(function(k){
+  var d=h('div','group'),t=h('h3'),i=h('i');i.style.setProperty('--dot',CATS[k].color);
+  t.appendChild(i);t.appendChild(document.createTextNode(CATS[k].name));d.appendChild(t);d.appendChild(h('div','items'));
+  list.appendChild(d);groups[k]=d;
+});
+P.forEach(function(p){
+  var b=h('button','place',p.n);b.type='button';b.id='place-'+p.id;
+  b.addEventListener('click',function(){select(p.id,true);if(cw<600||window.innerWidth<900)toggleList(false)});
+  groups[p.c].querySelector('.items').appendChild(b);placeEls[p.id]=b;
+});
+function toggleList(open){
+  $('listwrap').hidden=!open;$('sheet').classList.toggle('open',open);
+  $('listtoggle').setAttribute('aria-expanded',open);
+  $('listtoggle').textContent=open?'ซ่อนรายชื่อ':'สถานที่ทั้งหมด ('+P.length+')'+(nDone()?' · ไปแล้ว '+nDone():'');
+}
+$('listtoggle').addEventListener('click',function(){toggleList($('listwrap').hidden)});
+
+function applyFilter(){queueDeclutter();
+  chips.querySelectorAll('.chip').forEach(function(b){b.setAttribute('aria-pressed',b.id==='chip-'+filter)});
+  P.forEach(function(p){pinEls[p.id].classList.toggle('dim',(filter!=='all'&&p.c!==filter)||(!!dayHL&&dayHL.indexOf(p.id)<0))});
+  Object.keys(groups).forEach(function(k){groups[k].hidden=filter!=='all'&&k!==filter});
+  document.querySelectorAll('#trails .trail').forEach(function(t){
+    var c=t.getAttribute('data-cat');
+    t.classList.add(c);
+    t.classList.toggle('dim',filter!=='all'&&c!==filter);
+    t.classList.toggle('hot',filter!=='all'&&c===filter&&c!=='base');
+  });
+}
+function visibleIds(){return P.filter(function(p){return !pinEls[p.id].classList.contains('dim')}).map(function(p){return p.id})}
+function stepSel(d){
+  var ids=visibleIds();if(!ids.length)return;
+  var i=ids.indexOf(selected);i=i<0?0:(i+d+ids.length)%ids.length;select(ids[i],true);
+}
+/* ---------- ภาพประกอบของแต่ละจุด (วาดด้วย SVG ไม่ใช่ภาพถ่าย) ---------- */
+var ART={
+ lomsak:{t:'cliff',sky:'sunset',jut:1,pine:[150]}, daeng:{t:'cliff',sky:'sunset',red:1,pine:[40,75]},
+ yiapmek:{t:'cliff',sky:'mist',cloud:1,pine:[50]}, nanoi:{t:'cliff',sky:'day',fields:1,pine:[30,95]},
+ jamsin:{t:'cliff',sky:'day',pine:[35,62,112]}, makduk:{t:'cliff',sky:'sunset',pine:[30]},
+ nokaen:{t:'cliff',sky:'sunrise',cloud:1,rose:1,pine:[25]},
+ 'wk-fall':{t:'fall',w:26,tiers:1}, penphopmai:{t:'fall',w:92,tiers:1,maple:1}, phonphop:{t:'fall',w:38,tiers:3},
+ penphop:{t:'fall',w:72,tiers:1,curve:1}, thamyai:{t:'fall',w:30,tiers:2,maple:2}, thansawan:{t:'fall',w:22,tiers:2},
+ thamso:{t:'fall',w:36,tiers:1,cave:1}, khunphong:{t:'fall',w:18,tiers:1,tall:1},
+ anodat:{t:'pond',pines:[20,48,92,228,268,300]}, sakaeo:{t:'pond',rock:1,small:1,pines:[40,280]},
+ reservoir:{t:'pond',mist:1,wide:1,pines:[18,44,296]},
+ lanpra:{t:'lan'}, maysa:{t:'cliff',sky:'day',pine:[30,90]}, wangkwang:{t:'camp'}, langpae:{t:'sign'}, sithan:{t:'foot'}
+};
+function pine(x,y,s,c){return '<g transform="translate('+x+' '+y+') scale('+s+')"><rect x="-1.3" y="-32" width="2.6" height="32" fill="#6b4f3a"/><path d="M0 -56L9 -42H5L12 -30H-12L-5 -42H-9Z" fill="'+(c||'#3f6b4a')+'"/></g>'}
+function rnd(seed){var s=seed;return function(){s=(s*9301+49297)%233280;return s/233280}}
+function art(id){
+  var a=ART[id],o='',i,r=rnd(id.length*37+id.charCodeAt(0));
+  var SKY={sunset:['#fbd3b0','#f97316','#e2a98a','#c58a72'],sunrise:['#fde9c9','#f59e0b','#e9c39a','#cfa07c'],day:['#dceff6',null,'#a9c7c9','#86b0b0'],mist:['#e9f0f1',null,'#b9cccd','#9db8b8']};
+  if(a.t==='cliff'){
+    var k=SKY[a.sky],tip=a.jut?240:200,rock=a.red?'#c4673f':'#c9ad7f',rockD=a.red?'#9c4a2a':'#a88c5f';
+    o+='<rect width="320" height="120" fill="'+k[0]+'"/>';
+    if(k[1])o+='<circle cx="262" cy="'+(a.sky==='sunrise'?70:58)+'" r="15" fill="'+k[1]+'"/>';
+    o+='<path d="M120 96L160 66L196 84L236 58L282 82L320 70V120H120Z" fill="'+k[2]+'"/><path d="M110 108L170 88L220 102L270 86L320 98V120H110Z" fill="'+k[3]+'"/>';
+    if(a.fields)o+='<path d="M170 120L196 98H236L224 120Z" fill="#cfe2a0"/><path d="M236 98H282L290 120H224Z" fill="#e9dc8f"/><path d="M282 98H320V120H290Z" fill="#a9cf8a"/>';
+    if(a.cloud)for(i=0;i<6;i++)o+='<ellipse cx="'+(150+i*34)+'" cy="'+(100+(i%2)*9)+'" rx="34" ry="11" fill="#fff" opacity=".92"/>';
+    o+='<path d="M0 120V76H'+(tip-52)+'L'+tip+' 70L'+(tip+5)+' 76L'+(tip-40)+' 92L'+(tip-72)+' 120Z" fill="'+rock+'"/>';
+    o+='<path d="M'+(tip-52)+' 84L'+(tip+5)+' 76L'+(tip-40)+' 92L'+(tip-72)+' 120H'+(tip-90)+'Z" fill="'+rockD+'"/>';
+    o+='<path d="M0 76H'+(tip-52)+'L'+(tip-6)+' 71" fill="none" stroke="#7fa66a" stroke-width="4" stroke-linecap="round"/>';
+    a.pine.forEach(function(x,j){o+=pine(x,76,j?0.8:0.95)});
+    if(a.rose)for(i=0;i<3;i++){var bx=70+i*26;o+='<ellipse cx="'+bx+'" cy="72" rx="11" ry="6" fill="#4f8058"/><circle cx="'+(bx-4)+'" cy="70" r="2.2" fill="#dc2626"/><circle cx="'+(bx+3)+'" cy="72" r="2.2" fill="#dc2626"/><circle cx="'+(bx+1)+'" cy="68" r="2" fill="#ef4444"/>'}
+  }else if(a.t==='fall'){
+    o+='<rect width="320" height="120" fill="#3f6b4a"/>';
+    for(i=0;i<12;i++)o+='<circle cx="'+(i*30+r()*10)+'" cy="'+(8+r()*14)+'" r="'+(18+r()*8)+'" fill="'+(i%2?'#4f8058':'#5b8c5a')+'"/>';
+    o+='<path d="M52 104V34Q52 20 70 20H250Q268 20 268 34V104Z" fill="#7b837d"/>';
+    var y0=a.tall?6:(a.cave?30:24),y1=98,n=a.tiers,hh=(y1-y0)/n;
+    if(a.cave)o+='<ellipse cx="160" cy="66" rx="92" ry="36" fill="#2f3a35"/><path d="M52 40V34Q52 20 70 20H250Q268 20 268 34V40Q160 22 52 40Z" fill="#959c95"/>';
+    if(a.tall)o+='<rect x="120" y="0" width="80" height="24" fill="#7b837d"/>';
+    for(i=0;i<n;i++){
+      var w=a.w*(1+i*.28),x=160-w/2+(n>1?(i%2?8:-8):0),y=y0+i*hh;
+      if(a.curve)o+='<path d="M'+x+' '+(y+10)+'Q160 '+(y-12)+' '+(x+w)+' '+(y+10)+'V'+(y+hh)+'H'+x+'Z" fill="#f1f8fb"/>';
+      else o+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+hh+'" fill="#f1f8fb"/>';
+      for(var q=1;q<4;q++)o+='<rect x="'+(x+w*q/4-.6)+'" y="'+(y+6)+'" width="1.2" height="'+(hh-8)+'" fill="#6bb6d6" opacity=".55"/>';
+      if(i<n-1)o+='<rect x="'+(x-12)+'" y="'+(y+hh-2)+'" width="'+(w+30)+'" height="4" rx="2" fill="#959c95"/>';
+    }
+    o+='<ellipse cx="160" cy="106" rx="124" ry="15" fill="#6bb6d6"/><ellipse cx="160" cy="99" rx="'+(a.w*(1+(n-1)*.28)/2+10)+'" ry="5" fill="#fff" opacity=".9"/>';
+    o+='<ellipse cx="62" cy="104" rx="20" ry="9" fill="#6a716b"/><ellipse cx="262" cy="106" rx="24" ry="9" fill="#6a716b"/><ellipse cx="96" cy="112" rx="12" ry="5" fill="#59605b"/>';
+    if(a.maple){
+      o+='<path d="M0 30Q40 26 78 44" fill="none" stroke="#5a3d2b" stroke-width="2.5"/>';
+      for(i=0;i<9*a.maple;i++){var lx=i<7?8+i*10+r()*6:40+r()*240,ly=i<7?24+i*2.6+r()*8:98+r()*16;
+        o+='<rect x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" width="5" height="5" rx="1" transform="rotate('+Math.round(r()*90)+' '+lx.toFixed(1)+' '+ly.toFixed(1)+')" fill="'+(i%3?'#dc2626':'#ea580c')+'"/>'}
+    }
+  }else{
+    o+='<rect width="320" height="120" fill="'+(a.mist?'#e9f0f1':'#dceff6')+'"/>';
+    if(a.t==='foot'){
+      o+='<path d="M20 86L52 34H268L300 86Z" fill="#6f9a7c"/><path d="M52 34H268L276 47H44Z" fill="#c9ad7f"/><path d="M52 34H268" stroke="#7fa66a" stroke-width="4" stroke-linecap="round"/>';
+      o+='<rect y="84" width="320" height="36" fill="#cfe2bf"/><path d="M150 118Q170 96 196 88Q214 80 226 60" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="6 5" stroke-linecap="round"/>';
+      o+='<rect x="84" y="88" width="44" height="22" fill="#f3ead8"/><path d="M78 90L106 74L134 90Z" fill="#9c4a2a"/><rect x="101" y="96" width="10" height="14" fill="#6b4f3a"/>';
+      [[30,96,13],[52,102,10],[262,98,14],[290,104,11]].forEach(function(t){o+='<rect x="'+(t[0]-1.5)+'" y="'+t[1]+'" width="3" height="12" fill="#6b4f3a"/><circle cx="'+t[0]+'" cy="'+(t[1]-4)+'" r="'+t[2]+'" fill="#4f8058"/>'});
+    }else{
+      o+='<path d="M0 60Q30 44 60 54T120 50T180 55T240 48T320 56V70H0Z" fill="#86b08a"/>';
+      o+='<rect y="62" width="320" height="58" fill="'+((a.rock||a.t==='lan')?'#d9cdb5':'#cfe2bf')+'"/>';
+      if(a.t==='pond'){
+        var rx=a.wide?140:(a.small?58:100),ry=a.small?13:22;
+        o+='<ellipse cx="160" cy="90" rx="'+rx+'" ry="'+ry+'" fill="#6bb6d6"/>';
+        for(i=0;i<4;i++)o+='<rect x="'+(160-rx*.55+i*rx*.3)+'" y="'+(84+i%2*8)+'" width="'+rx*.22+'" height="1.6" rx=".8" fill="#fff" opacity=".7"/>';
+        if(a.rock)o+='<path d="M20 100H110M210 76H300M40 112H150" stroke="#c2b396" stroke-width="2" stroke-linecap="round"/>';
+        a.pines.forEach(function(x,j){o+=pine(x,j%2?70:66,j%2?0.85:1)});
+        if(a.mist)for(i=0;i<4;i++)o+='<rect x="'+(20+i*70)+'" y="'+(74+i%2*10)+'" width="110" height="7" rx="3.5" fill="#fff" opacity=".75"/>';
+      }else if(a.t==='lan'){
+        o+='<path d="M0 82H90L110 96H230L250 80H320M30 108H140L160 98M190 112H300" fill="none" stroke="#c2b396" stroke-width="2" stroke-linecap="round"/>';
+        for(i=0;i<16;i++){var fx=14+i*19+r()*8,fy=72+r()*42;o+='<path d="M'+fx+' '+(fy+5)+'V'+fy+'" stroke="#5b8c5a" stroke-width="1.3"/><circle cx="'+fx+'" cy="'+fy+'" r="2.2" fill="'+(i%3?'#7c3aed':'#f59e0b')+'"/>'}
+        o+=pine(26,66,.8)+pine(296,66,.9);
+      }else if(a.t==='buddha'){
+        o+=pine(34,70,1)+pine(66,68,.8)+pine(250,68,.85)+pine(288,70,1);
+        o+='<rect x="118" y="96" width="84" height="8" fill="#d1d5db"/><rect x="128" y="86" width="64" height="10" fill="#e5e7eb"/>';
+        o+='<ellipse cx="160" cy="84" rx="24" ry="6" fill="#c8922f"/><path d="M142 84Q140 58 160 52Q180 58 178 84Z" fill="#d9a441"/><circle cx="160" cy="44" r="8" fill="#d9a441"/><path d="M156 37L160 28L164 37Z" fill="#d9a441"/>';
+      }else if(a.t==='camp'){
+        o+=pine(22,68,1)+pine(120,66,.8)+pine(214,66,.85)+pine(300,68,1);
+        [[58,96,'#0ea5e9'],[150,104,'#f97316'],[236,96,'#f59e0b']].forEach(function(t){o+='<path d="M'+(t[0]-26)+' '+t[1]+'L'+t[0]+' '+(t[1]-28)+'L'+(t[0]+26)+' '+t[1]+'Z" fill="'+t[2]+'"/><path d="M'+(t[0]-7)+' '+t[1]+'L'+t[0]+' '+(t[1]-16)+'L'+(t[0]+7)+' '+t[1]+'Z" fill="#374151" opacity=".55"/>'});
+        o+='<g fill="#8b5e3c" stroke="#8b5e3c" stroke-width="1.6" stroke-linecap="round"><ellipse cx="282" cy="98" rx="10" ry="5" stroke="none"/><path d="M276 101V110M280 102V110M285 102V110M289 101V110M290 95L295 87M294 85L291 80M295 85L298 80" fill="none"/><ellipse cx="296" cy="86" rx="3.4" ry="2.4" stroke="none"/></g>';
+      }else if(a.t==='sign'){
+        o+=pine(28,68,1)+pine(290,68,.95);
+        o+='<rect x="96" y="70" width="5" height="40" fill="#6b4f3a"/><rect x="219" y="70" width="5" height="40" fill="#6b4f3a"/><rect x="84" y="52" width="152" height="40" rx="3" fill="#fff" stroke="#2b7070" stroke-width="2.5"/>';
+        o+='<text x="160" y="69" text-anchor="middle" style="font:500 8px Inter,\'Noto Sans Thai\',sans-serif" fill="#374151">ครั้งหนึ่งในชีวิต</text><text x="160" y="83" text-anchor="middle" style="font:700 10px Inter,\'Noto Sans Thai\',sans-serif" fill="#2b7070">เราคือผู้พิชิตภูกระดึง</text>';
+      }
+    }
+  }
+  return o;
+}
+var PHOTO={"makduk": {"by": "SUPAPORN KHUMTHONGIN", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:*%E0%B9%81%E0%B8%AA%E0%B8%87%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%9C%E0%B8%B2%E0%B8%AB%E0%B8%A1%E0%B8%B2%E0%B8%81%E0%B8%94%E0%B8%B9%E0%B8%81.JPG"}, "phonphop": {"by": "Mmonthon", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:8th_place_-_Phon_Phop_Waterfall_on_Phu_Kradueng_National_Park,_Thailand.JPG"}, "langpae": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Lang_Pae_(I).jpg"}, "thamyai": {"by": "Nicetory", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Maple_leaves_and_the_Big_Cave_Waterfall,_Phu_Kradueng.jpg"}, "nanoi": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Na_Noi_Cliff_(I).jpg"}, "penphopmai": {"by": "Nicetory", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Penphopmai_Waterfall.jpg"}, "lomsak": {"by": "Billybobmac", "lic": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Pha_Lom_Sak.jpg"}, "nokaen": {"by": "Yothind", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Sun_rise_at_Nok_Aen_Cliff-1_,Phu_Kradueng_National_Park.jpg"}, "yiapmek": {"by": "Sorrasan", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Yeab_Mek_cliff.jpg"}, "wangkwang": {"by": "Anawit1", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:%E0%B8%88%E0%B8%B8%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%95%E0%B9%89%E0%B8%99%E0%B8%97%E0%B9%8C%E0%B8%AD%E0%B8%B8%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4%E0%B8%A0%E0%B8%B9%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B6%E0%B8%87.jpg"}};
+var visited={};try{visited=JSON.parse(localStorage.getItem('pk-visited')||'{}')||{}}catch(e){}
+function nDone(){return P.filter(function(p){return visited[p.id]}).length}
+function paintDone(){
+  P.forEach(function(p){pinEls[p.id].classList.toggle('done',!!visited[p.id]);placeEls[p.id].classList.toggle('done',!!visited[p.id])});
+  toggleList(!$('listwrap').hidden);
+}
+var ARROW={prev:'M15 5l-7 7 7 7',next:'M9 5l7 7-7 7'};
+var sheetMode='place';
+function paintSheet(){
+  var plan=!!dayHL&&sheetMode==='plan';
+  $('dayplan').hidden=!plan;$('detail').hidden=plan;$('listtoggle').hidden=plan;
+  if(plan)toggleList(false);
+  var bk=$('backplan');bk.hidden=!(dayHL&&!plan);
+  if(dayHL)bk.textContent='‹ กลับไปแพลน'+DAYS[dayIdx].tab;
+  $('peek').textContent=plan?DAYS[dayIdx].title+' · '+DAYS[dayIdx].sub:byId[selected].n;
+}
+function sheetState(){var c=$('sheet').classList;return c.contains('mini')?0:c.contains('tall')?2:1}
+function setSheet(n){
+  n=Math.max(0,Math.min(2,n));var c=$('sheet').classList;
+  c.toggle('mini',n===0);c.toggle('tall',n===2);if(n===0)$('sheet').scrollTop=0;$('grab').setAttribute('aria-expanded',n>0);
+  $('grab').setAttribute('aria-label',n===0?'เปิดแผงข้อมูล':'พับเก็บแผงข้อมูล');
+}
+$('grab').addEventListener('click',function(){setSheet(sheetState()===1?0:1)});
+$('peek').addEventListener('click',function(){setSheet(1)});
+var gy=null;
+$('grab').addEventListener('touchstart',function(e){gy=e.touches[0].clientY},{passive:true});
+$('grab').addEventListener('touchend',function(e){if(gy===null)return;var dy=e.changedTouches[0].clientY-gy;gy=null;if(Math.abs(dy)>24){e.preventDefault();setSheet(sheetState()+(dy<0?1:-1))}});
+$('backplan').addEventListener('click',function(){sheetMode='plan';paintSheet();$('sheet').scrollTop=0});
+function select(id,center,keep){
+  queueDeclutter();
+  if(!keep)sheetMode='place';
+  if(center&&$('sheet').classList.contains('tall')){$('sheet').classList.remove('tall');$('grab').setAttribute('aria-expanded',false)}
+  selected=id;var p=byId[id];
+  P.forEach(function(q){
+    pinEls[q.id].classList.toggle('sel',q.id===id);
+    placeEls[q.id].setAttribute('aria-current',q.id===id);
+  });
+  pins.appendChild(pinEls[id]);
+  var d=$('detail');d.innerHTML='';
+  var row=h('div','row1');row.appendChild(h('h2',null,p.n));
+  var st=h('div','step');
+  [['prev','สถานที่ก่อนหน้า',-1],['next','สถานที่ถัดไป',1]].forEach(function(a){
+    var b=h('button');b.type='button';b.id='step-'+a[0];b.setAttribute('aria-label',a[1]);
+    var s=el('svg',{viewBox:'0 0 24 24'},b);el('path',{d:ARROW[a[0]]},s);
+    b.addEventListener('click',function(){stepSel(a[2])});st.appendChild(b);
+  });
+  row.appendChild(st);
+  var tags=h('div','tags'),t1=h('span','tag',CATS[p.c].name);t1.style.setProperty('--tc',CATS[p.c].color);tags.appendChild(t1);
+  if(p.tag)tags.appendChild(h('span','tag sun',p.tag));
+  if(p.acc)tags.appendChild(h('span','tag '+p.acc,p.acc==='guide'?'ต้องมีเจ้าหน้าที่นำทาง':'เข้าชมได้เอง'));
+  tags.appendChild(h('span','dist',/ม\./.test(p.dist)?'📍 ห่างจากวังกวาง '+p.dist.replace('~','ประมาณ '):'📍 '+p.dist));
+  if(p.seg)tags.appendChild(h('span','dist','↔ '+p.seg));
+  if(p.hrs)tags.appendChild(h('span','dist','🕐 '+p.hrs));
+  var tp=h('p','tip');tp.appendChild(document.createTextNode('💡 '));tp.appendChild(document.createTextNode(p.tip));
+  var fig=h('figure','figure');
+  function drawn(){
+    fig.innerHTML='<svg viewBox="0 0 320 120" preserveAspectRatio="xMidYMid slice" role="img">'+art(id)+'</svg>';
+    fig.firstChild.setAttribute('aria-label','ภาพวาดประกอบ '+p.n);
+    fig.appendChild(h('figcaption',null,'ภาพวาดประกอบ'));
+  }
+  var ph=PHOTO[id];
+  if(ph){
+    var im=h('img');im.alt='ภาพถ่าย '+p.n;im.src='photos/'+id+'.jpg';im.addEventListener('error',drawn);
+    var cap=h('figcaption'),ln=h('a',null,'ภาพ: '+ph.by+' · '+ph.lic);ln.href=ph.page;ln.target='_blank';ln.rel='noopener';
+    cap.appendChild(ln);fig.appendChild(im);fig.appendChild(cap);
+  }else drawn();
+  d.appendChild(fig);
+  d.appendChild(row);d.appendChild(tags);d.appendChild(h('p','desc',p.desc));d.appendChild(tp);
+  var vl=h('label','visit'+(visited[id]?' on':'')),vi=h('input');vi.type='checkbox';vi.id='visit-check';vi.checked=!!visited[id];
+  vl.appendChild(vi);vl.appendChild(h('span',null,visited[id]?'ไปมาแล้ว':'ติ๊กเมื่อไปถึงแล้ว'));
+  vi.addEventListener('change',function(){
+    if(vi.checked)visited[id]=1;else delete visited[id];
+    try{localStorage.setItem('pk-visited',JSON.stringify(visited))}catch(e){}
+    vl.classList.toggle('on',vi.checked);vl.lastChild.textContent=vi.checked?'ไปมาแล้ว':'ติ๊กเมื่อไปถึงแล้ว';paintDone();
+  });
+  d.appendChild(vl);
+  $('minibar').textContent=p.n+' · ดูรายละเอียด ›';
+  var old=pins.querySelector('.pill');if(old)old.parentNode.removeChild(old);
+  var lb=pinEls[id].querySelector('.lbl');
+  try{var bb=lb.getBBox();if(bb.width)pinEls[id].insertBefore(el('rect',{class:'pill',x:bb.x-8,y:bb.y-2,width:bb.width+16,height:bb.height+4,rx:(bb.height+4)/2}),lb)}catch(e){}
+  $('sheet').scrollTop=0;paintSheet();
+  if(center){
+    if(curView!=='map')go('map');
+    requestAnimationFrame(function(){focusPin(id)});
+  }
+}
+
+/* ---------- views ---------- */
+function show(v){
+  if(['map','plan','prep'].indexOf(v)<0)v='map';
+  curView=v;
+  ['map','plan','prep'].forEach(function(k){$('view-'+k).hidden=k!==v});
+  document.querySelectorAll('.nav a').forEach(function(a){
+    if(a.getAttribute('data-view')===v)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+  });
+  if(v==='map')requestAnimationFrame(function(){measure();draw()});
+}
+function go(v){show(v);try{if(location.hash!=='#'+v)location.hash=v}catch(e){}}
+document.querySelectorAll('.nav a').forEach(function(a){
+  a.addEventListener('click',function(e){e.preventDefault();go(a.getAttribute('data-view'))});
+});
+window.addEventListener('hashchange',function(){var v=location.hash.slice(1);if(v&&v!==curView)show(v)});
+
+/* ---------- trip plan ---------- */
+var DAYS=[
+ {tab:'คืนวันที่ 9',title:'คืนวันที่ 9',sub:'พ 9 ธ.ค. · เดินทาง',total:'กรุงเทพฯ → ภูกระดึง ~450 กม.',rows:[
+  ['21.00','รวมตัว ออกเดินทางจากกรุงเทพฯ เดินทางข้ามคืน (นอนบนรถ)','~7–8 ชม.'],
+  ['~05.00','ถึงศูนย์บริการฯ ศรีฐาน (ตีนเขา) ล้างหน้า กินข้าวเช้า','',['sithan']]]},
+ {tab:'วันที่ 1',title:'วันที่ 1',sub:'พฤ 10 ธ.ค. · ขึ้นเขา',total:'รวม ~9 กม.',rows:[
+  ['05.00–07.00','เช็กอิน ลงทะเบียน ฝากลูกหาบ ตามขั้นตอนก่อนขึ้นภูด้านล่าง','',['sithan']],
+  ['07.00–12.30','ศรีฐาน → หลังแป (สู้!! แตงโมหวาน มันเผาละมุน)','5.5 กม.',['langpae']],
+  ['12.30–13.00','นั่งพักที่หลังแป','',null,1],
+  ['13.00–14.30','หลังแป → ศูนย์ฯ วังกวาง (ทางราบ)','3.5 กม.',['wangkwang']],
+  ['14.30','เช็กอิน กินข้าว นอนยาว','']]},
+ {tab:'วันที่ 2',title:'วันที่ 2',sub:'ศ 11 ธ.ค. · เที่ยวหลัก',total:'เดิน ~8 กม. + ปั่น ~20 กม.',rows:[
+  ['04.45–07.00','ผานกแอ่น เดินไปชมพระอาทิตย์ขึ้น (รวมพลวังกวาง 05.00 น. มีเจ้าหน้าที่นำ)','3.2 กม. ไป-กลับ',['nokaen']],
+  ['07.00–07.45','กลับที่พัก อาบน้ำ',''],
+  ['07.45–08.30','กินข้าวเช้า',''],
+  ['08.30–08.45','เช่าจักรยานล้อโต 410.-/วัน (ควรมีถุงมือ) ที่วังกวาง แล้วออกเดินทางได้','',['wangkwang']],
+  ['08.45–13.00','ปั่นไปจอดที่จุดจอดน้ำตกถ้ำใหญ่ แล้วเดินวนทุกน้ำตก แล้วกลับจุดจอด','ปั่น 0.6 + เดิน ~5 กม.',['thamyai','penphop','phonphop','penphopmai']],
+  ['13.00–13.45','กินข้าวเที่ยงระหว่างทาง (เตรียมเสบียงไป) ไม่กลับวังกวาง','',null,1],
+  ['13.45–18.00','ปั่นต่อไปเส้นทางริมผา แวะถ่ายรูปทุกผา จนถึงผาหล่มสัก','ปั่น ~10 กม.',['makduk','jamsin','nanoi','yiapmek','daeng','lomsak'],0,['กินข้าวเย็น ~17.00 น.','ดูพระอาทิตย์ตก ~17.45 น.','ออกจากผาไม่เกิน 18.00 น.']],
+  ['18.00–19.00','ปั่นกลับวังกวาง (เปิดไฟฉาย) คืนจักรยาน พักผ่อนตามอัธยาศัย','ปั่น ~9.3 กม.']]},
+ {tab:'วันที่ 3',title:'วันที่ 3',sub:'ส 12 ธ.ค. · ลงเขา',total:'รวม ~9.5 กม.',rows:[
+  ['06.30–07.30','อ่างเก็บน้ำไพรัตน์–ธารไชย ชมหมอกยามเช้า','~0.5 กม.',['reservoir']],
+  ['08.00–09.00','กินข้าวเช้า เช็กเอาต์','',['wangkwang']],
+  ['09.00–09.30','เก็บของ อ้อยอิ่งเรื่อยๆ','',null,1],
+  ['09.30–11.00','วังกวาง → หลังแป','3.5 กม.',['langpae']],
+  ['11.00–14.30','ลงเขาถึงศรีฐาน (เริ่มลงก่อน 13.00 น.) แล้วเดินทางกลับ','5.5 กม.',['sithan']]]}
+];
+var daytabs=$('daytabs'),dayIds=[];
+var ICON=[['🚌','📍'],['📝','🥾','☕','🚶','⛺'],['🌅','🚿','🍚','🚲','💧','🍱','📸','🔦'],['🌫️','🍚','🎒','🚶','⬇️']];
+function startDay(){
+  var now=new Date(Date.now()+7*3600e3); // เวลาไทย
+  if(now.getUTCFullYear()===2026&&now.getUTCMonth()===11){var n=now.getUTCDate()-9;if(n>=0&&n<=3)return n}
+  try{var s=localStorage.getItem('pk-day');if(s!==null&&+s>=0&&+s<=3)return +s}catch(e){}
+  return 0;
+}
+function showDay(i){
+  dayIdx=i;var d=DAYS[i],parts=d.sub.split(' · ');
+  try{localStorage.setItem('pk-day',i)}catch(e){}
+  daytabs.querySelectorAll('.chip').forEach(function(b,j){b.setAttribute('aria-pressed',j===i)});
+  $('dayhero').style.setProperty('--c',DAYC[i]);$('dayrows').style.setProperty('--c',DAYC[i]);
+  var t=$('daytitle');t.textContent=d.title+' · '+parts[1];
+  $('daytotal').textContent=parts[0];
+  var sg=$('daystats');sg.innerHTML='';
+  STATS[i].forEach(function(s){var c=h('div'),v=h('dd',null,s[0]);if(s[1])v.appendChild(h('small',null,' '+s[1]));c.appendChild(v);c.appendChild(h('dt',null,s[2]));sg.appendChild(c)});
+  $('dayonmap').hidden=!ROUTE[i]&&i!==0?true:false;
+  var ol=$('dayrows');ol.innerHTML='';dayIds=[];
+  d.rows.forEach(function(r,n){
+    var li=h('li',r[4]?'rest':''),body=h('div','tbody'),top=h('div','ttop');
+    li.appendChild(h('span','tdot',ICON[i][n]||'•'));
+    top.appendChild(h('span','time',r[0]));
+    if(r[4])top.appendChild(h('span','pill restp','พัก'));
+    if(r[2])top.appendChild(h('span','pill',r[2]));
+    body.appendChild(top);body.appendChild(h('p','what',r[1]));
+    if(r[5]){var ul=h('ul','notes');r[5].forEach(function(x){ul.appendChild(h('li',null,x))});body.appendChild(ul)}
+    if(r[3]){
+      var st=h('div','stops');
+      r[3].forEach(function(id){
+        if(dayIds.indexOf(id)<0)dayIds.push(id);
+        var b=h('button','place link',byId[id].n);b.type='button';
+        b.addEventListener('click',function(){setDayHL(true);select(id,true)});
+        st.appendChild(b);
+      });
+      body.appendChild(st);
+    }
+    li.appendChild(body);ol.appendChild(li);
+  });
+  $('view-plan').scrollTop=0;
+  if(dayHL)setDayHL(true);
+}
+function setDayHL(on){
+  dayHL=on?dayIds.slice():null;
+  strip.querySelectorAll('.stop').forEach(function(b,j){b.setAttribute('aria-pressed',on?j-1===dayIdx:j===0)});
+  sheetMode=on?'plan':'place';
+  applyFilter();paintSheetPlan();paintSheet();paintRoute();
+}
+var STATS=[
+ [['~450','กม.','ระยะทาง'],['7–8','ชม.','บนรถ'],['21.00','','ออกเดินทาง'],['~05.00','','ถึงศรีฐาน']],
+ [['~9','กม.','เดินรวม'],['5.5','กม.','ขึ้นเขา'],['3.5','กม.','ทางราบ'],['~9.5','ชม.','รวมเวลา']],
+ [['~8','กม.','เดิน'],['~20','กม.','ปั่น'],['12','จุด','แวะ'],['~14','ชม.','รวมเวลา']],
+ [['~9.5','กม.','เดินรวม'],['3.5','กม.','ทางราบ'],['5.5','กม.','ลงเขา'],['8','ชม.','รวมเวลา']]
+];
+var ROUTE=[null,
+ [['climb',1],['direct',-1]],
+ [['nokaen',1],['lanpra',1],['thamyai',1],['w1',1],['w2',1],['w3',1],['w4',1],['wkmak',1],['c5',-1],['c4',-1],['c3',-1],['c2',-1],['c1',-1]],
+ [['res',1],['direct',1],['climb',-1]]];
+function paintRoute(){
+  var g=$('route');g.innerHTML='';
+  pins.querySelectorAll('.seq').forEach(function(n){n.parentNode.removeChild(n)});
+  $('trails').classList.toggle('muted',!!dayHL);
+  if(!dayHL)return;
+  var c=DAYC[dayIdx],list=ROUTE[dayIdx];
+  if(list){
+    var keys=[],lines={};
+    list.forEach(function(r){if(keys.indexOf(r[0])<0)keys.push(r[0])});
+    keys.forEach(function(k){el('path',{d:EDGES[k].d,class:'rcase'},g)});
+    keys.forEach(function(k){lines[k]=el('path',{d:EDGES[k].d,class:'rline',stroke:c},g)});
+    var pts=[];
+    list.forEach(function(r){
+      var line=lines[r[0]],L=line.getTotalLength(),dir=r[1],sp=[];
+      if(L<70)sp=[L/2];else for(var s=40;s<L-20;s+=85)sp.push(dir>0?s:L-s);
+      sp.forEach(function(s){
+        var a=line.getPointAtLength(s),b=line.getPointAtLength(Math.max(0,Math.min(L,s+3*dir)));
+        if(pts.some(function(q){return Math.hypot(q.x-a.x,q.y-a.y)<30}))return;
+        if(Object.keys(EDGES).some(function(k){var l=EDGES[k].lp;return l&&Math.hypot(l.x-a.x,l.y-a.y)<30}))return;
+        pts.push(a);
+        var ag=el('g',{transform:'translate('+a.x.toFixed(1)+' '+a.y.toFixed(1)+') rotate('+(Math.atan2(b.y-a.y,b.x-a.x)*180/Math.PI).toFixed(0)+')'},g);
+        el('rect',{x:-7,y:-7,width:14,height:14,rx:3,class:'rbox',stroke:c},ag);
+        el('path',{d:'M-3.5 0H3M0 -3L3.2 0L0 3',class:'rarr',stroke:c},ag);
+      });
+    });
+  }
+  dayIds.forEach(function(id,i){
+    var s=el('g',{class:'seq',transform:'translate(-13 -15)'},pinEls[id].querySelector('.body'));
+    el('circle',{r:8.5},s);el('text',{y:4,'text-anchor':'middle'},s).textContent=i+1;
+  });
+}
+function paintSheetPlan(){
+  var box=$('dayplan');box.innerHTML='';box.hidden=!dayHL;if(!dayHL)return;
+  var d=DAYS[dayIdx],hd=h('div','dayhead'),t=h('h3',null,d.title);t.style.setProperty('--c',DAYC[dayIdx]);
+  t.appendChild(h('small',null,d.sub));hd.appendChild(t);box.appendChild(hd);
+  var sg=h('dl','stats');
+  STATS[dayIdx].forEach(function(s){var c=h('div'),v=h('dd',null,s[0]);if(s[1])v.appendChild(h('small',null,' '+s[1]));c.appendChild(v);c.appendChild(h('dt',null,s[2]));sg.appendChild(c)});
+  box.appendChild(sg);
+  var ol=h('ol','rows mini');
+  d.rows.forEach(function(r){
+    var li=h('li'),w=h('div','what');
+    if(r[4])w.appendChild(h('span','rest','พัก · '));
+    w.appendChild(document.createTextNode(r[1]+(r[5]?' · '+r[5].join(' · '):'')));
+    if(r[3]){
+      var st=h('div','stops');
+      r[3].forEach(function(id){
+        var b=h('button','place link',byId[id].n);b.type='button';
+        b.addEventListener('click',function(){select(id,true)});st.appendChild(b);
+      });
+      w.appendChild(st);
+    }
+    li.appendChild(h('span','time',r[0]));li.appendChild(w);if(r[2])li.appendChild(h('span','km',r[2]));ol.appendChild(li);
+  });
+  box.appendChild(ol);
+}
+function frameDay(){
+  requestAnimationFrame(function(){
+    measure();
+    var xs=dayIds.map(function(id){return byId[id].x}),ys=dayIds.map(function(id){return byId[id].y});
+    var x0=Math.min.apply(0,xs)-110,x1=Math.max.apply(0,xs)+110,y0=Math.min.apply(0,ys)-120,y1=Math.max.apply(0,ys)+80;
+    var z=Math.min(baseW()/(x1-x0),baseW()*ch/cw/(y1-y0),2.6);
+    flyTo((x0+x1)/2,(y0+y1)/2,Math.max(1,z));
+    if(dayIds.indexOf(selected)<0)select(dayIds[0],false,true);
+  });
+}
+var DAYC=['#2563eb','#047857','#7c3aed','#c2410c'],DAYB=['450 กม.','9 กม.','28 กม.','9.5 กม.'],strip=$('strip');
+var allB=h('button','stop all','ทั้งทริป');allB.type='button';allB.id='stop-all';
+allB.addEventListener('click',function(){setDayHL(false);measure();flyTo(cw<600?byId[selected].x:W/2,cw<600?byId[selected].y:H/2,homeZ())});
+strip.appendChild(allB);
+DAYS.forEach(function(d,i){
+  var b=h('button','chip');b.type='button';b.id='day-'+i;b.style.setProperty('--c',DAYC[i]);b.appendChild(h('b',null,d.tab));b.appendChild(h('span',null,d.sub.split(' · ')[0]));
+  b.addEventListener('click',function(){showDay(i)});daytabs.appendChild(b);
+  var s=h('button','stop');s.type='button';s.id='stop-'+i;s.style.setProperty('--c',DAYC[i]);
+  s.style.minWidth=[82,76,92,76][i]+'px';
+  s.appendChild(h('span','t',d.tab));s.appendChild(h('span','s',d.sub));s.appendChild(h('span','badge',DAYB[i]));
+  s.addEventListener('click',function(){showDay(i);setDayHL(true);frameDay();setTimeout(function(){$('sheet').scrollTop=0},120);s.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'})});
+  strip.appendChild(s);
+});
+$('dayonmap').addEventListener('click',function(){setDayHL(true);go('map');frameDay()});
+
+/* ---------- checklist (จำไว้ในเครื่องนี้เท่านั้น) ---------- */
+var ITEMS=['เสื้อกันหนาว','รองเท้าเดินป่า','ไฟฉาย','Power bank','พาสปอร์ตอุทยานฯ'],done={};
+try{done=JSON.parse(localStorage.getItem('pk-checks')||'{}')||{}}catch(e){}
+ITEMS.forEach(function(name,i){
+  var li=h('li'),lab=h('label'),inp=h('input');
+  inp.type='checkbox';inp.id='check-'+i;inp.checked=!!done[i];
+  inp.addEventListener('change',function(){done[i]=inp.checked;try{localStorage.setItem('pk-checks',JSON.stringify(done))}catch(e){}});
+  lab.appendChild(inp);lab.appendChild(h('span',null,name));li.appendChild(lab);$('checks').appendChild(li);
+});
+
+Object.keys(PHOTO).forEach(function(id){
+  var li=h('li'),a=h('a',null,byId[id].n);a.href=PHOTO[id].page;a.target='_blank';a.rel='noopener';
+  li.appendChild(a);li.appendChild(document.createTextNode(' โดย '+PHOTO[id].by+' · '+PHOTO[id].lic));$('credits').appendChild(li);
+});
+/* ---------- boot ---------- */
+setSheet(0);toggleList(false);applyFilter();showDay(startDay());setDayHL(false);paintDone();select(selected);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){select(selected)});
+show((location.hash||'').slice(1)||'map');
+requestAnimationFrame(function(){
+  measure();var p=byId[selected];
+  view={cx:p.x,cy:p.y,z:cw<600?homeZ():1.25};draw();
+});
+})();
+</script>
+
+<div class="toast" id="pwatoast" role="status" aria-live="polite"></div>
+<div class="iossheet" id="iossheet" hidden>
+  <div class="iscard" role="dialog" aria-label="วิธีติดตั้งแอป">
+    <h2>ติดตั้งบนหน้าจอโฮม</h2>
+    <ol>
+      <li>แตะปุ่ม <b>แชร์</b> <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3M8 7l4-4 4 4M6 11H5a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1h-1"/></svg> ที่แถบของ Safari</li>
+      <li>เลือก <b>เพิ่มไปยังหน้าจอโฮม</b></li>
+      <li>แตะ <b>เพิ่ม</b> แล้วเปิดจากไอคอนบนหน้าจอโฮม</li>
+    </ol>
+    <button class="btn2" id="iosclose" type="button">เข้าใจแล้ว</button>
+  </div>
+</div>
+<style>
+.head{align-items:center}
+.head .sub{flex:1 1 0}
+.installbtn{flex:none;min-height:36px;padding:0 14px;border:0;border-radius:9999px;background:var(--primary-deep);color:#fff;font-weight:600;cursor:pointer;box-shadow:var(--shadow-md)}
+.netchip{flex:none;font-size:.75rem;font-weight:600;color:#78350f;background:#fef3c7;box-shadow:inset 0 0 0 1px #fcd34d;border-radius:9999px;padding:0 10px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(76px + env(safe-area-inset-bottom,0px));background:var(--ink);color:#fff;padding:8px 16px;border-radius:9999px;z-index:50;font-weight:500;opacity:0;pointer-events:none;transition:opacity .25s;white-space:nowrap}
+.toast.on{opacity:1}
+.iossheet{position:fixed;inset:0;z-index:60;background:rgba(17,24,39,.45);display:flex;align-items:flex-end;justify-content:center}
+.iscard{width:100%;max-width:480px;background:var(--surface);border-radius:16px 16px 0 0;padding:20px max(16px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
+.iscard h2{font-size:1.25rem;font-weight:700}
+.iscard ol{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:10px}
+.iscard svg{vertical-align:-3px}
+.btn2{min-height:44px;border:0;border-radius:8px;background:var(--primary-deep);color:#fff;font-weight:500;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+<script>
+(function(){
+  function $(id){return document.getElementById(id)}
+  var inFrame=false;try{inFrame=window.self!==window.top}catch(e){inFrame=true}
+  var standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;
+  var ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  var btn=$('installbtn'),dp=null,tt=0;
+  function toast(msg){var t=$('pwatoast');t.textContent=msg;t.classList.add('on');clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('on')},3200)}
+  function can(){return !standalone&&!inFrame}
+  window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();dp=e;if(can())btn.hidden=false});
+  window.addEventListener('appinstalled',function(){dp=null;btn.hidden=true;toast('ติดตั้งแอปแล้ว')});
+  if(ios&&can())btn.hidden=false;
+  btn.addEventListener('click',function(){
+    if(dp){dp.prompt();if(dp.userChoice)dp.userChoice.then(function(){dp=null;btn.hidden=true})}
+    else if(ios)$('iossheet').hidden=false;
+  });
+  $('iosclose').addEventListener('click',function(){$('iossheet').hidden=true});
+  $('iossheet').addEventListener('click',function(e){if(e.target===this)this.hidden=true});
+  function net(){$('netchip').hidden=navigator.onLine!==false}
+  window.addEventListener('online',function(){net();toast('กลับมาออนไลน์แล้ว')});window.addEventListener('offline',net);net();
+  if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)&&!inFrame){
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      var w=reg.installing;
+      if(w&&!navigator.serviceWorker.controller)w.addEventListener('statechange',function(){if(w.state==='activated')toast('พร้อมใช้งานออฟไลน์แล้ว')});
+    }).catch(function(){});
+  }
+})();
+</script>
+</body></html>
