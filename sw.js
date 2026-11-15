@@ -1,7 +1,9 @@
 /* Service worker: ใช้ออฟไลน์ได้ */
-var V='pk-94d3abe5';
-var PRE=["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png", "photos/langpae.jpg", "photos/lomsak.jpg", "photos/makduk.jpg", "photos/nanoi.jpg", "photos/nokaen.jpg", "photos/penphopmai.jpg", "photos/phonphop.jpg", "photos/thamyai.jpg", "photos/wangkwang.jpg", "photos/yiapmek.jpg"];
+var V='pk-f616f5ff';
+var PRE=["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png", "vendor/leaflet/leaflet.js", "vendor/leaflet/leaflet.css", "vendor/leaflet/images/layers.png", "vendor/leaflet/images/layers-2x.png", "photos/langpae.jpg", "photos/lomsak.jpg", "photos/makduk.jpg", "photos/nanoi.jpg", "photos/nokaen.jpg", "photos/penphopmai.jpg", "photos/phonphop.jpg", "photos/thamyai.jpg", "photos/wangkwang.jpg", "photos/yiapmek.jpg"];
 var FONT_CSS="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap";
+var TILES='tiles-v1',TILE_MAX=700;
+var TILE_HOSTS=['a.tile.opentopomap.org','server.arcgisonline.com','tile.openstreetmap.org'];
 self.addEventListener('install',function(e){
   e.waitUntil((async function(){
     var c=await caches.open(V);
@@ -24,6 +26,17 @@ self.addEventListener('activate',function(e){
 self.addEventListener('fetch',function(e){
   var r=e.request;if(r.method!=='GET')return;
   var u=new URL(r.url),same=u.origin===location.origin,font=u.hostname==='fonts.googleapis.com'||u.hostname==='fonts.gstatic.com';
+  if(TILE_HOSTS.indexOf(u.hostname)>=0){
+    e.respondWith((async function(){
+      var c=await caches.open(TILES),hit=await c.match(r);if(hit)return hit;
+      try{
+        var res=await fetch(r);
+        if(res&&res.ok){c.put(r,res.clone());c.keys().then(function(ks){if(ks.length>TILE_MAX)ks.slice(0,ks.length-TILE_MAX+60).forEach(function(k){c.delete(k)})})}
+        return res;
+      }catch(err){return Response.error()}
+    })());
+    return;
+  }
   if(!same&&!font)return;
   var work=(async function(){
     var c=await caches.open(V);

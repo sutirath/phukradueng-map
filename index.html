@@ -10,6 +10,9 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<script src="vendor/leaflet/leaflet.js"></script>
+<script>window.PK_REAL=true</script>
 <style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>แผนที่ภูกระดึง</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -65,6 +68,25 @@ button:active{transform:scale(.95)}
 .hoursbar .lg{display:inline-flex;align-items:center;gap:6px;color:var(--body-text)}
 .hoursbar .lg i{width:10px;height:10px;border-radius:50%;background:#f97316}
 .app.full .hoursbar{display:none}
+.mapbox>#map{position:relative;z-index:0}
+#realmap{position:absolute;inset:0;z-index:1;background:#dfe7e4}
+.mapseg{position:absolute;left:var(--gl);bottom:26px;z-index:5;display:flex;border-radius:9999px;overflow:hidden;box-shadow:var(--shadow-lg);background:rgba(255,255,255,.95)}
+.mapseg button{min-height:44px;padding:0 16px;border:0;background:transparent;color:var(--ink);font-weight:600;cursor:pointer}
+.mapseg button[aria-pressed="true"]{background:var(--primary-deep);color:#fff}
+.chips.floating,.zoom,.daychip,.minibar{z-index:5}
+.leaflet-top.leaflet-right{margin-top:58px}
+.leaflet-container{font-family:var(--font);background:#dfe7e4}
+.leaflet-control-attribution{font-size:10px}
+.rmk{background:transparent;border:0}
+.rm{position:relative;width:30px;height:30px}
+.rm svg{display:block;overflow:visible}
+.rm .disc{stroke:#fff;stroke-width:2}
+.rm .glyph{fill:#fff}.rm .glyph.ln{fill:none;stroke:#fff;stroke-width:2.2}
+.rm .rl{position:absolute;left:50%;top:32px;transform:translateX(-50%);white-space:nowrap;font:600 13px var(--font);color:var(--ink);text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff,0 0 5px #fff;pointer-events:none}
+.lbloff .rm:not(.sel) .rl{display:none}
+.rm.sel .disc{stroke:var(--sky-600);stroke-width:4}
+.rm.dim{opacity:.3}
+.rm.done .disc{fill:#e5e7eb}.rm.done .glyph{fill:var(--body-text)}
 .chips.floating{position:absolute;top:10px;left:0;right:0;padding:2px var(--gr) 6px var(--gl)}
 .chips.floating .chip{box-shadow:var(--shadow-md)}
 .daychip{position:absolute;left:var(--gl);top:60px;min-height:36px;padding:0 14px;border:0;border-radius:9999px;background:var(--primary-deep);color:#fff;font-weight:600;cursor:pointer;box-shadow:var(--shadow-lg)}
@@ -370,6 +392,11 @@ button.hrow{cursor:pointer}
           </g>
           <text class="maptxt" x="540" y="792" text-anchor="middle">แผนผังตามแผนที่เส้นทางเดินเท้าของอุทยาน ไม่ตามมาตราส่วน</text>
         </svg>
+        <div id="realmap" hidden></div>
+        <div class="mapseg" id="mapseg" role="group" aria-label="ชนิดแผนที่" hidden>
+          <button type="button" id="seg-plan" aria-pressed="true">แผนผัง</button>
+          <button type="button" id="seg-real" aria-pressed="false">แผนที่จริง</button>
+        </div>
         <div class="chips floating" id="chips" role="group" aria-label="กรองประเภทสถานที่"></div>
         <button class="daychip" id="daychip" type="button" hidden></button>
         <div class="zoom">
@@ -505,55 +532,55 @@ var CATS={
   base:{name:'จุดบริการ',color:'var(--m-transport)'}
 };
 var P=[
-{id:'lomsak',n:'ผาหล่มสัก',c:'cliff',x:150,y:700,lp:'l',out:1,dist:'~9,360 ม.',seg:'จากผาแดง 2,420 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น. อยู่ได้ไม่เกิน 18.00 น.',
+{id:'lomsak',ll:[16.8573,101.7475],llq:'est',n:'ผาหล่มสัก',c:'cliff',x:150,y:700,lp:'l',out:1,dist:'~9,360 ม.',seg:'จากผาแดง 2,420 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น. อยู่ได้ไม่เกิน 18.00 น.',
   desc:'สัญลักษณ์ของภูกระดึง ชะง่อนหินทรายยื่นออกไปกลางอากาศ มีต้นสนโดดเดี่ยวยืนคู่กัน มองเห็นทิวเขาซ้อนกันไกลสุดตา',
   tip:'เดินไป–กลับเกือบทั้งวัน ขากลับมืดแน่นอน ต้องพกไฟฉาย ตามกำหนดของอุทยานอยู่ที่ผาได้ไม่เกิน 18.00 น.'},
-{id:'daeng',n:'ผาแดง',c:'cliff',x:268,y:712,lp:'b',out:1,dist:'~6,940 ม.',seg:'จากผาเหยียบเมฆ 1,900 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'daeng',ll:[16.8607,101.7649],llq:'est',n:'ผาแดง',c:'cliff',x:268,y:712,lp:'b',out:1,dist:'~6,940 ม.',seg:'จากผาเหยียบเมฆ 1,900 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'หน้าผาหินทรายสีออกแดง จุดชมวิวกว้างก่อนถึงผาหล่มสัก คนน้อยกว่าและนั่งชมแสงเย็นได้สบาย',
   tip:'ถ้าไปไม่ทันผาหล่มสัก ชมพระอาทิตย์ตกที่นี่แทนได้'},
-{id:'yiapmek',n:'ผาเหยียบเมฆ',c:'cliff',x:388,y:696,lp:'b',out:1,dist:'~5,040 ม.',seg:'จากผานาน้อย 1,560 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'yiapmek',ll:[16.8635,101.7786],llq:'est',n:'ผาเหยียบเมฆ',c:'cliff',x:388,y:696,lp:'b',out:1,dist:'~5,040 ม.',seg:'จากผานาน้อย 1,560 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'หน้าผาที่ช่วงเช้าหน้าหนาวมักมีทะเลหมอกลอยอยู่ใต้เท้า เป็นที่มาของชื่อ',
   tip:'จุดพักกลางทางที่ดีบนเส้นทางเลียบผา'},
-{id:'nanoi',n:'ผานาน้อย',c:'cliff',x:495,y:668,lp:'b',out:1,dist:'~3,480 ม.',seg:'จากผาจำศีล 550 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'nanoi',ll:[16.86575,101.789796],llq:'photo',n:'ผานาน้อย',c:'cliff',x:495,y:668,lp:'b',out:1,dist:'~3,480 ม.',seg:'จากผาจำศีล 550 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'จุดชมวิวมองลงไปเห็นที่ราบและทุ่งนาเล็ก ๆ ด้านล่างภู บรรยากาศเงียบสงบ',
   tip:'แวะพักสั้น ๆ ระหว่างเดินเลียบผา'},
-{id:'jamsin',n:'ผาจำศีล',c:'cliff',x:595,y:648,lp:'t',dist:'~2,930 ม.',seg:'จากผาหมากดูก 670 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'jamsin',ll:[16.8666,101.7928],llq:'est',n:'ผาจำศีล',c:'cliff',x:595,y:648,lp:'t',dist:'~2,930 ม.',seg:'จากผาหมากดูก 670 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'ลานหินริมผาเงียบ ๆ ถัดจากผาหมากดูก เหมาะนั่งพักรับลมและชมวิวทิศใต้',
   tip:'เส้นทางเลียบผาช่วงนี้เดินและปั่นง่าย'},
-{id:'makduk',n:'ผาหมากดูก',c:'cliff',x:695,y:626,lp:'b',out:1,dist:'2,260 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'makduk',ll:[16.8676,101.7965],llq:'est',n:'ผาหมากดูก',c:'cliff',x:695,y:626,lp:'b',out:1,dist:'2,260 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'จุดชมพระอาทิตย์ตกที่ใกล้ที่พักที่สุดในกลุ่มผาริมทางเลียบผา ลานหินกว้าง',
   tip:'เหมาะกับวันแรกที่เพิ่งขึ้นถึงยอดภูและยังล้าอยู่'},
-{id:'maysa',n:'ผาเมษา',c:'cliff',x:775,y:606,lp:'b',out:1,dist:'~3,800 ม.',seg:'จากหลังแป 300 ม. · จากผาหมากดูก 1,900 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'maysa',ll:[16.8706,101.8068],llq:'est',n:'ผาเมษา',c:'cliff',x:775,y:606,lp:'b',out:1,dist:'~3,800 ม.',seg:'จากหลังแป 300 ม. · จากผาหมากดูก 1,900 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'หน้าผาที่อยู่ใกล้หลังแปที่สุด เป็นจุดแรกของเส้นทางเลียบผาฝั่งตะวันออก',
   tip:'เดินต่อจากหลังแปได้ไม่ไกล เหมาะแวะก่อนลงเขา'},
-{id:'nokaen',n:'ผานกแอ่น',c:'cliff',x:745,y:411,lp:'r',out:1,dist:'1,590 ม.',tag:'ชมพระอาทิตย์ขึ้น',acc:'guide',hrs:'05.00–07.00 น. (1 รอบ/วัน)',
+{id:'nokaen',ll:[16.893314,101.799873],llq:'photo',n:'ผานกแอ่น',c:'cliff',x:745,y:411,lp:'r',out:1,dist:'1,590 ม.',tag:'ชมพระอาทิตย์ขึ้น',acc:'guide',hrs:'05.00–07.00 น. (1 รอบ/วัน)',
   desc:'จุดชมพระอาทิตย์ขึ้นยอดนิยม มองเห็นภูผาจิตและทะเลหมอกยามเช้า',
   tip:'ต้องไปพร้อมเจ้าหน้าที่นำทาง รอบเดียวต่อวัน ออกเดินราวตี 5 อากาศหนาวจัด เตรียมเสื้อกันหนาวและไฟฉาย'},
-{id:'thamyai',n:'น้ำตกถ้ำใหญ่',s:'ถ้ำใหญ่',c:'water',x:480,y:510,lp:'l',dist:'~880 ม.',seg:'จากลานพระฯ 240 ม.',acc:'self',hrs:'08.30–14.00 น.',
+{id:'thamyai',ll:[16.88485,101.776039],llq:'photo',n:'น้ำตกถ้ำใหญ่',s:'ถ้ำใหญ่',c:'water',x:480,y:510,lp:'l',dist:'~880 ม.',seg:'จากลานพระฯ 240 ม.',acc:'self',hrs:'08.30–14.00 น.',
   desc:'จุดถ่ายรูปใบเมเปิลแดงที่มีชื่อที่สุดบนภู ธารน้ำไหลผ่านโขดหินและเพิงผาในป่าทึบ',
   tip:'แสงสวยช่วงสาย ถ้ามาเพื่อใบเมเปิลควรมาปลาย ธ.ค. – ม.ค.'},
-{id:'penphop',n:'น้ำตกเพ็ญพบ',s:'เพ็ญพบ',c:'water',x:538,y:448,lp:'l',dist:'~2,020 ม.',seg:'จากน้ำตกถ้ำใหญ่ 1,140 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
+{id:'penphop',ll:[16.8924,101.7752],llq:'est',n:'น้ำตกเพ็ญพบ',s:'เพ็ญพบ',c:'water',x:538,y:448,lp:'l',dist:'~2,020 ม.',seg:'จากน้ำตกถ้ำใหญ่ 1,140 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
   desc:'น้ำตกม่านโค้งเหนือแอ่งน้ำ ตั้งชื่อตามการค้นพบในคืนวันเพ็ญ',
   tip:'ต้องไปพร้อมเจ้าหน้าที่นำทาง รอบเดียวต่อวัน'},
-{id:'phonphop',n:'น้ำตกโผนพบ',s:'โผนพบ',c:'water',x:548,y:398,lp:'l',dist:'~2,360 ม.',seg:'จากน้ำตกเพ็ญพบ 340 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
+{id:'phonphop',ll:[16.8946,101.7749],llq:'est',n:'น้ำตกโผนพบ',s:'โผนพบ',c:'water',x:548,y:398,lp:'l',dist:'~2,360 ม.',seg:'จากน้ำตกเพ็ญพบ 340 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
   desc:'น้ำตกหลายชั้นกลางป่า ตั้งชื่อตาม โผน กิ่งเพชร แชมป์โลกคนแรกของไทย',
   tip:'ทางลงไปหน้าน้ำตกค่อนข้างลื่น เดินระวัง และต้องไปพร้อมเจ้าหน้าที่นำทาง'},
-{id:'penphopmai',n:'น้ำตกเพ็ญพบใหม่',s:'เพ็ญพบใหม่',c:'water',x:548,y:348,lp:'l',dist:'~2,570 ม.',seg:'จากน้ำตกโผนพบ 560 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
+{id:'penphopmai',ll:[16.898286,101.774467],llq:'photo',n:'น้ำตกเพ็ญพบใหม่',s:'เพ็ญพบใหม่',c:'water',x:548,y:348,lp:'l',dist:'~2,570 ม.',seg:'จากน้ำตกโผนพบ 560 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
   desc:'น้ำตกหน้าผาหินกว้าง มีต้นเมเปิลขึ้นริมธาร ช่วงปลายปีใบสีแดงร่วงลอยเต็มแอ่งน้ำ',
   tip:'น้ำมากช่วงต้นฤดู (ต.ค. – พ.ย.) ต้องไปพร้อมเจ้าหน้าที่นำทาง'},
-{id:'lanpra',n:'ลานพระศรีนครินทร์',s:'ลานพระฯ',c:'pond',x:580,y:478,lp:'b',dist:'640 ม.',
+{id:'lanpra',ll:[16.8855,101.7809],llq:'est',n:'ลานพระศรีนครินทร์',s:'ลานพระฯ',c:'pond',x:580,y:478,lp:'b',dist:'640 ม.',
   desc:'ลานบนเส้นทางระหว่างศูนย์ฯ วังกวางกับกลุ่มน้ำตก มีรูปปั้นประดิษฐานอยู่ตามที่แผนที่ของอุทยานระบุ',
   tip:'เป็นจุดแยกไปเส้นทางน้ำตก'},
-{id:'reservoir',n:'อ่างเก็บน้ำไพรัตน์–ธารไชย',s:'อ่างไพรัตน์ฯ',c:'pond',x:669,y:545,lp:'bl',dist:'350 ม.',acc:'self',hrs:'06.30–17.00 น.',
+{id:'reservoir',ll:[16.8837,101.7889],llq:'est',n:'อ่างเก็บน้ำไพรัตน์–ธารไชย',s:'อ่างไพรัตน์ฯ',c:'pond',x:669,y:545,lp:'bl',dist:'350 ม.',acc:'self',hrs:'06.30–17.00 น.',
   desc:'อ่างเก็บน้ำเล็ก ๆ ใกล้ที่พัก เช้าตรู่มีหมอกลอยเหนือผิวน้ำ เดินไปชมได้ง่ายก่อนเก็บของลงเขา',
   tip:'ไปช่วง 06.30 – 07.30 น. ก่อนหมอกจาง เปิดให้เข้าชมถึง 17.00 น.'},
-{id:'wangkwang',n:'ศูนย์บริการฯ วังกวาง',s:'วังกวาง',c:'base',x:652,y:448,lp:'tl',dist:'จุดพักแรมบนยอดภู',
+{id:'wangkwang',ll:[16.8862,101.7868],llq:'est',n:'ศูนย์บริการฯ วังกวาง',s:'วังกวาง',c:'base',x:652,y:448,lp:'tl',dist:'จุดพักแรมบนยอดภู',
   desc:'ศูนย์กลางของยอดภู มีลานกางเต็นท์ บ้านพัก เต็นท์ให้เช่า ร้านอาหาร และจุดเช่าจักรยาน มักมีกวางป่าเดินมาใกล้ ๆ',
   tip:'เส้นทางเที่ยวทุกสายเริ่มและจบที่นี่'},
-{id:'langpae',hrs:'เริ่มเดินลงเขา 07.00–13.00 น.',n:'หลังแป',c:'base',x:815,y:540,lp:'r',out:1,dist:'3,500 ม.',seg:'จากศรีฐาน 5,500 ม.',
+{id:'langpae',ll:[16.871056,101.808483],llq:'photo',hrs:'เริ่มเดินลงเขา 07.00–13.00 น.',n:'หลังแป',c:'base',x:815,y:540,lp:'r',out:1,dist:'3,500 ม.',seg:'จากศรีฐาน 5,500 ม.',
   desc:'ขอบภูจุดที่ทางขึ้นมาบรรจบที่ราบ มีป้าย “ครั้งหนึ่งในชีวิต เราคือผู้พิชิตภูกระดึง” ให้ถ่ายรูปเป็นที่ระลึก',
   tip:'จากนี้เป็นทางราบถึงวังกวาง 3,500 ม.'},
-{id:'sithan',hrs:'เริ่มเดินขึ้นเขา 06.00–12.00 น.',n:'ศูนย์บริการฯ ศรีฐาน',s:'ศรีฐาน (ตีนภู)',c:'base',x:985,y:735,lp:'b',out:1,dist:'จุดเริ่มเดินขึ้นเขา',seg:'ถึงหลังแป 5,500 ม.',
+{id:'sithan',ll:[16.8712,101.8473],llq:'est',hrs:'เริ่มเดินขึ้นเขา 06.00–12.00 น.',n:'ศูนย์บริการฯ ศรีฐาน',s:'ศรีฐาน (ตีนภู)',c:'base',x:985,y:735,lp:'b',out:1,dist:'จุดเริ่มเดินขึ้นเขา',seg:'ถึงหลังแป 5,500 ม.',
   desc:'ที่ทำการอุทยานฯ ด้านล่าง ลงทะเบียน ชำระค่าธรรมเนียม และชั่งสัมภาระฝากลูกหาบก่อนเริ่มเดิน',
   tip:'เริ่มเดินแต่เช้าจะไม่ร้อนและมีเวลาพักตามซำ'}
 ];
@@ -640,6 +667,42 @@ function clampView(){
   return [bw,bh];
 }
 function draw(){queueDeclutter();var b=clampView();svg.classList.toggle('far',cw/b[0]<.5);svg.setAttribute('viewBox',(view.cx-b[0]/2).toFixed(1)+' '+(view.cy-b[1]/2).toFixed(1)+' '+b[0].toFixed(1)+' '+b[1].toFixed(1))}
+var realMode=false,lmap=null,rmk={};
+function glyphSvg(c){return c==='pond'?'<ellipse class="glyph ln" rx="6.5" ry="4.2"/>':'<path class="glyph" d="'+GLYPH[c]+'"/>'}
+function fitReal(){var pts=P.filter(function(p){return p.ll}).map(function(p){return p.ll});lmap.fitBounds(L.latLngBounds(pts),{padding:[40,40]})}
+function paintReal(){
+  if(!lmap)return;
+  P.forEach(function(p){
+    var m=rmk[p.id];if(!m)return;var e=m.getElement();if(!e)return;var r=e.firstChild;
+    r.classList.toggle('sel',p.id===selected);r.classList.toggle('dim',pinEls[p.id].classList.contains('dim'));r.classList.toggle('done',!!visited[p.id]);
+    m.setZIndexOffset(p.id===selected?1000:0);
+  });
+}
+function labelZoom(){$('realmap').classList.toggle('lbloff',lmap.getZoom()<14)}
+function initReal(){
+  if(lmap||!window.L)return;
+  var topo=L.tileLayer('https://a.tile.opentopomap.org/{z}/{x}/{y}.png',{maxZoom:17,crossOrigin:true,attribution:'© <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA) · © OpenStreetMap'});
+  var sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,crossOrigin:true,attribution:'Tiles © Esri'});
+  var osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,crossOrigin:true,attribution:'© OpenStreetMap contributors'});
+  lmap=L.map('realmap',{zoomControl:false,layers:[topo]}).setView([16.88,101.79],12);
+  var lc={};lc['ภูมิประเทศ']=topo;lc['ดาวเทียม']=sat;lc['ถนน']=osm;
+  L.control.layers(lc,null,{position:'topright'}).addTo(lmap);
+  P.forEach(function(p){
+    if(!p.ll)return;
+    var html='<div class="rm cat-'+p.c+'"><svg viewBox="-15 -15 30 30" width="30" height="30"><circle class="disc" r="14"/>'+glyphSvg(p.c)+'</svg><span class="rl">'+(p.s||p.n)+'</span></div>';
+    var m=L.marker(p.ll,{icon:L.divIcon({className:'rmk',html:html,iconSize:[30,30],iconAnchor:[15,15]}),title:p.n,keyboard:true}).addTo(lmap);
+    m.on('click',function(){select(p.id,true)});rmk[p.id]=m;
+  });
+  lmap.on('zoomend',labelZoom);
+  lmap.whenReady(function(){fitReal();labelZoom();setTimeout(paintReal,0)});
+}
+function setReal(on){
+  realMode=on;
+  $('seg-plan').setAttribute('aria-pressed',!on);$('seg-real').setAttribute('aria-pressed',on);
+  $('realmap').hidden=!on;$('map').style.visibility=on?'hidden':'';
+  if(on){initReal();if(lmap){lmap.invalidateSize();setTimeout(paintReal,0)}}
+}
+if(window.PK_REAL&&window.L){$('mapseg').hidden=false;$('seg-plan').addEventListener('click',function(){setReal(false)});$('seg-real').addEventListener('click',function(){setReal(true)})}
 var dcq=0;
 function queueDeclutter(){if(!dcq)dcq=requestAnimationFrame(function(){dcq=0;declutter()})}
 /* ซ่อนป้ายชื่อที่ซ้อนกัน: เลือกก่อน > จุดของวันที่เลือก > จุดอื่น > ชื่อซำ (ตัวเลขระยะทางแสดงเสมอ) */
@@ -708,12 +771,12 @@ function up(e){delete ptrs[e.pointerId];pinch=0;svg.classList.remove('drag')}
 window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
 svg.addEventListener('click',function(e){if(moved){e.stopPropagation();e.preventDefault();moved=false}},true);
 svg.addEventListener('wheel',function(e){e.preventDefault();zoomAt(e.clientX,e.clientY,view.z*(e.deltaY<0?1.2:1/1.2))},{passive:false});
-$('zin').addEventListener('click',function(){flyTo(view.cx,view.cy,Math.min(4.5,view.z*1.5))});
-$('zout').addEventListener('click',function(){flyTo(view.cx,view.cy,Math.max(1,view.z/1.5))});
-$('zfit').addEventListener('click',function(){flyTo(W/2,H/2,1)});
+$('zin').addEventListener('click',function(){if(realMode){lmap.zoomIn();return}flyTo(view.cx,view.cy,Math.min(4.5,view.z*1.5))});
+$('zout').addEventListener('click',function(){if(realMode){lmap.zoomOut();return}flyTo(view.cx,view.cy,Math.max(1,view.z/1.5))});
+$('zfit').addEventListener('click',function(){if(realMode){fitReal();return}flyTo(W/2,H/2,1)});
 function homeZ(){return cw<600?Math.max(fillZ(),.62*baseW()/cw):1}
-function focusPin(id){var p=byId[id];measure();flyTo(p.x,p.y,Math.max(view.z,fillZ(),cw<600?2:1.3))}
-function recenter(){measure();if(flying)return;if(!(dayHL&&sheetMode==='plan')&&(cw<600||view.z>1.05)){view.cx=byId[selected].x;view.cy=byId[selected].y}draw()}
+function focusPin(id){var p=byId[id];if(realMode){if(p.ll&&lmap)lmap.setView(p.ll,Math.max(lmap.getZoom(),15),{animate:true});return}measure();flyTo(p.x,p.y,Math.max(view.z,fillZ(),cw<600?2:1.3))}
+function recenter(){if(lmap)lmap.invalidateSize();measure();if(flying)return;if(!(dayHL&&sheetMode==='plan')&&(cw<600||view.z>1.05)){view.cx=byId[selected].x;view.cy=byId[selected].y}draw()}
 function setFull(on){
   $('app').classList.toggle('full',on);$('zfull').setAttribute('aria-pressed',on);
   $('zfull').setAttribute('aria-label',on?'ออกจากโหมดเต็มจอ':'ดูแผนที่เต็มจอ');
@@ -752,7 +815,7 @@ function toggleList(open){
 }
 $('listtoggle').addEventListener('click',function(){toggleList($('listwrap').hidden)});
 
-function applyFilter(){queueDeclutter();
+function applyFilter(){queueDeclutter();if(lmap)setTimeout(paintReal,0);
   chips.querySelectorAll('.chip').forEach(function(b){b.setAttribute('aria-pressed',b.id==='chip-'+filter)});
   P.forEach(function(p){pinEls[p.id].classList.toggle('dim',(filter!=='all'&&p.c!==filter)||(!!dayHL&&dayHL.indexOf(p.id)<0))});
   Object.keys(groups).forEach(function(k){groups[k].hidden=filter!=='all'&&k!==filter});
@@ -887,7 +950,7 @@ $('grab').addEventListener('touchstart',function(e){gy=e.touches[0].clientY},{pa
 $('grab').addEventListener('touchend',function(e){if(gy===null)return;var dy=e.changedTouches[0].clientY-gy;gy=null;if(Math.abs(dy)>24){e.preventDefault();setSheet(sheetState()+(dy<0?1:-1))}});
 $('backplan').addEventListener('click',function(){sheetMode='plan';paintSheet();$('sheet').scrollTop=0});
 function select(id,center,keep){
-  queueDeclutter();
+  queueDeclutter();if(lmap)setTimeout(paintReal,0);
   if(!keep)sheetMode='place';
   if(center&&$('sheet').classList.contains('tall')){$('sheet').classList.remove('tall');$('grab').setAttribute('aria-expanded',false)}
   selected=id;var p=byId[id];
@@ -934,6 +997,7 @@ function select(id,center,keep){
     vl.classList.toggle('on',vi.checked);vl.lastChild.textContent=vi.checked?'ไปมาแล้ว':'ติ๊กเมื่อไปถึงแล้ว';paintDone();
   });
   d.appendChild(vl);
+  if(p.ll)tags.appendChild(h('span','dist','📍 พิกัดบนแผนที่จริง: '+(p.llq==='photo'?'จากภาพถ่าย':'โดยประมาณ')));
   $('minibar').textContent=p.n+' · ดูรายละเอียด ›';
   var old=pins.querySelector('.pill');if(old)old.parentNode.removeChild(old);
   var lb=pinEls[id].querySelector('.lbl');
