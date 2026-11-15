@@ -1,5 +1,5 @@
 /* Service worker: ใช้ออฟไลน์ได้ */
-var V='pk-2ff74c82';
+var V='pk-94d3abe5';
 var PRE=["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png", "photos/langpae.jpg", "photos/lomsak.jpg", "photos/makduk.jpg", "photos/nanoi.jpg", "photos/nokaen.jpg", "photos/penphopmai.jpg", "photos/phonphop.jpg", "photos/thamyai.jpg", "photos/wangkwang.jpg", "photos/yiapmek.jpg"];
 var FONT_CSS="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap";
 self.addEventListener('install',function(e){

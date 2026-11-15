@@ -59,32 +59,28 @@ button:active{transform:scale(.95)}
 
 /* map view */
 .mapview{display:flex;flex-direction:column}
+.mapbody{flex:1;min-height:0;display:flex;flex-direction:column}
+.hoursbar{flex:none;display:flex;flex-wrap:wrap;align-items:center;gap:2px 16px;padding:7px var(--gr) 7px var(--gl);background:rgba(74,158,158,.12);border-bottom:1px solid var(--border);font-size:.8125rem;color:var(--ink)}
+.hoursbar b{font-weight:700;font-variant-numeric:tabular-nums}
+.hoursbar .lg{display:inline-flex;align-items:center;gap:6px;color:var(--body-text)}
+.hoursbar .lg i{width:10px;height:10px;border-radius:50%;background:#f97316}
+.app.full .hoursbar{display:none}
+.chips.floating{position:absolute;top:10px;left:0;right:0;padding:2px var(--gr) 6px var(--gl)}
+.chips.floating .chip{box-shadow:var(--shadow-md)}
+.daychip{position:absolute;left:var(--gl);top:60px;min-height:36px;padding:0 14px;border:0;border-radius:9999px;background:var(--primary-deep);color:#fff;font-weight:600;cursor:pointer;box-shadow:var(--shadow-lg)}
+.hourscard{background:var(--surface-subtle);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
+.hourscard h3{font-size:1rem;font-weight:700}
+.hgroup{display:flex;flex-direction:column}
+.hgroup h4{margin:0 0 2px;font-size:.8125rem;font-weight:600;color:var(--body-text);display:flex;align-items:center;gap:6px}
+.hgroup h4 i{width:10px;height:10px;border-radius:50%}
+.hrow{display:flex;justify-content:space-between;gap:12px;align-items:baseline;width:100%;padding:8px 0;border:0;border-top:1px solid var(--border);background:transparent;font-size:.9375rem;text-align:left;color:var(--ink);cursor:default}
+button.hrow{cursor:pointer}
+.hrow span:last-child{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.note{background:rgba(74,158,158,.1);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
 .mapbox{flex:1;min-height:0;position:relative;background:var(--mapbg);overflow:hidden}
 #map{display:block;width:100%;height:100%;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
 #map.drag{cursor:grabbing}
 
-/* timeline strip: glass chrome over the map */
-.strip{position:absolute;top:8px;left:var(--gl);right:var(--gr);display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
-  padding:8px 6px 6px;gap:6px;border-radius:10px;background:rgba(255,255,255,.3);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);box-shadow:var(--shadow-md)}
-.strip::-webkit-scrollbar{display:none}
-.stop{position:relative;flex:none;min-height:32px;border:0;border-radius:6px;padding:2px 10px;cursor:pointer;text-align:left;
-  background:var(--c);color:#fff;display:flex;flex-direction:column;justify-content:center;line-height:1.3}
-.stop .t{font-weight:600;font-size:.8125rem;white-space:nowrap}
-.stop .s{display:none}
-.stop .badge{position:absolute;top:-7px;right:-3px;line-height:1.35;background:var(--surface);color:var(--ink);border-radius:9999px;padding:0 6px;font-size:.6875rem;font-weight:600;box-shadow:var(--shadow-xs);font-variant-numeric:tabular-nums;white-space:nowrap}
-.stop.all{background:var(--surface);color:var(--ink);justify-content:center;font-weight:600;font-size:.8125rem}
-.stop:hover{transform:scale(1.03)}
-.stop:active{transform:scale(.95)}
-.stop[aria-pressed="true"]{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--c),var(--shadow-lg)}
-.stop.all[aria-pressed="true"]{--c:var(--primary-deep)}
-.stop[aria-pressed="true"]::after{content:"";position:absolute;left:50%;bottom:-9px;margin-left:-5px;border:5px solid transparent;border-top-color:var(--c)}
-
-.app.full{grid-template-rows:minmax(0,1fr);grid-template-areas:"main"}
-.app.full .head,.app.full .nav,.app.full .sheet{display:none}
-.minibar{display:none;position:absolute;left:var(--gl);bottom:26px;max-width:calc(100% - var(--gl) - var(--gr) - 56px);min-height:44px;padding:0 14px;border:0;border-radius:12px;
-  background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:var(--shadow-lg);color:var(--ink);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
-.app.full .minibar{display:block}
-.zoom button[aria-pressed="true"],.zoom button[aria-pressed="true"]:hover{background:var(--primary-deep);color:#fff}
 .zoom{position:absolute;right:var(--gr);bottom:26px;display:flex;flex-direction:column;gap:8px}
 .zoom button{width:44px;height:44px;border-radius:50%;box-shadow:var(--shadow-lg);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);background:rgba(255,255,255,.92);color:var(--body-text);border:0;font-size:1.25rem;font-weight:500;cursor:pointer;display:grid;place-items:center}
 .zoom button:hover{background:#fff}
@@ -294,7 +290,7 @@ button:active{transform:scale(.95)}
 
 @media (prefers-reduced-motion:reduce){
   button,.pin .body{transition:none}
-  button:active,.stop:hover,.stop:active{transform:none}
+  button:active{transform:none}
   .pin.sel .body,.pin:hover .body{transform:none}
   .visit.on input{animation:none}
 }
@@ -307,8 +303,7 @@ button:active{transform:scale(.95)}
   .nav a{flex:none;flex-direction:row;gap:8px;min-height:0;padding:0 16px;font-size:.875rem;border-top:0;margin:0;border-bottom:3px solid transparent}
   .nav a[aria-current="page"]{border-bottom-color:var(--primary)}
   .nav a svg{width:20px;height:20px}
-  .mapview{flex-direction:row}
-  .strip{right:auto;max-width:calc(100% - 32px)}
+  .mapbody{flex-direction:row}
   .grab,.peek{display:none}
   .sheet.mini{overflow-y:auto}
   .sheet.mini>*:not(.grab):not(.peek){opacity:1;pointer-events:auto}
@@ -330,7 +325,7 @@ button:active{transform:scale(.95)}
 <div class="app" id="app">
   <header class="head">
     <h1>ภูกระดึง</h1>
-    <p class="sub">ทริป 10–12 ธ.ค. 2569 · อุทยานแห่งชาติภูกระดึง จ.เลย</p>
+    <p class="sub">อุทยานแห่งชาติภูกระดึง จ.เลย · แผนที่และแผนแนะนำ</p>
     <span class="netchip" id="netchip" hidden>ออฟไลน์</span>
     <button class="installbtn" id="installbtn" type="button" hidden>ติดตั้งแอป</button>
   </header>
@@ -338,6 +333,12 @@ button:active{transform:scale(.95)}
   <main class="main">
     <!-- แผนที่ -->
     <section class="view mapview" id="view-map" aria-label="แผนที่">
+      <div class="hoursbar" id="hoursbar">
+        <span>⬆️ ขึ้นเขา <b>06.00–12.00 น.</b></span>
+        <span>⬇️ ลงเขา <b>07.00–13.00 น.</b></span>
+        <span class="lg"><i></i>ต้องมีเจ้าหน้าที่นำทาง</span>
+      </div>
+      <div class="mapbody">
       <div class="mapbox" id="mapbox">
         <svg id="map" viewBox="0 0 1080 800" role="group" aria-label="แผนที่ยอดภูกระดึง แตะหมุดเพื่อดูรายละเอียด ลากเพื่อเลื่อน">
           <defs>
@@ -369,7 +370,8 @@ button:active{transform:scale(.95)}
           </g>
           <text class="maptxt" x="540" y="792" text-anchor="middle">แผนผังตามแผนที่เส้นทางเดินเท้าของอุทยาน ไม่ตามมาตราส่วน</text>
         </svg>
-        <div class="strip" id="strip" role="group" aria-label="วันในทริป"></div>
+        <div class="chips floating" id="chips" role="group" aria-label="กรองประเภทสถานที่"></div>
+        <button class="daychip" id="daychip" type="button" hidden></button>
         <div class="zoom">
           <button type="button" id="zin" aria-label="ซูมเข้า">+</button>
           <button type="button" id="zout" aria-label="ซูมออก">−</button>
@@ -388,18 +390,23 @@ button:active{transform:scale(.95)}
         <article class="detail" id="detail" aria-live="polite"></article>
         <button class="listtoggle" id="listtoggle" type="button" aria-expanded="false">สถานที่ทั้งหมด</button>
         <div class="listwrap" id="listwrap" hidden>
-          <div class="chips" id="chips" role="group" aria-label="กรองประเภทสถานที่"></div>
+          <section class="hourscard" id="hourscard"></section>
           <div class="list" id="list"></div>
         </div>
+      </div>
       </div>
     </section>
 
     <!-- แผนทริป -->
-    <section class="view scroll" id="view-plan" aria-label="แผนทริป" hidden>
+    <section class="view scroll" id="view-plan" aria-label="แผนแนะนำ" hidden>
       <div class="page">
         <div>
-          <p class="eyebrow">แผนเที่ยว · เดินทางคืน 9 ธ.ค.</p>
-          <h2 class="trip">ทริปภูกระดึง <span style="white-space:nowrap">10–12 ธันวาคม 2569</span></h2>
+          <p class="eyebrow">แผนแนะนำ · 3 วัน 2 คืน</p>
+          <h2 class="trip">แผนเที่ยวภูกระดึง</h2>
+        </div>
+        <div class="note">
+          <p>💡 นี่คือแผนจากทริปของเรา (10–12 ธ.ค. 2569) เอาไปปรับตามเวลาและกำลังของตัวเองได้ ถ้ายังไม่รู้ว่าจะไปไหน ดูแผนที่และเวลาเปิด–ปิดของแต่ละจุดที่แท็บ "แผนที่" ก่อนได้</p>
+          <button class="btn" id="tomap" type="button">🗺️ ดูแผนที่ภูกระดึง</button>
         </div>
         <dl class="stats three">
           <div><dd>06.00–12.00</dd><dt>⬆️ เวลาขึ้นเขา</dt></div>
@@ -484,7 +491,7 @@ button:active{transform:scale(.95)}
 
   <nav class="nav" aria-label="เมนูหลัก">
     <a href="#map" data-view="map"><svg viewBox="0 0 24 24"><path d="M9 4L3 6.5v13.5L9 17.5l6 2.5 6-2.5V4l-6 2.5zM9 4v13.5M15 6.5V20"/></svg>แผนที่</a>
-    <a href="#plan" data-view="plan"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>แผนทริป</a>
+    <a href="#plan" data-view="plan"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>แผนแนะนำ</a>
     <a href="#prep" data-view="prep"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>เตรียมตัว</a>
   </nav>
 </div>
@@ -543,10 +550,10 @@ var P=[
 {id:'wangkwang',n:'ศูนย์บริการฯ วังกวาง',s:'วังกวาง',c:'base',x:652,y:448,lp:'tl',dist:'จุดพักแรมบนยอดภู',
   desc:'ศูนย์กลางของยอดภู มีลานกางเต็นท์ บ้านพัก เต็นท์ให้เช่า ร้านอาหาร และจุดเช่าจักรยาน มักมีกวางป่าเดินมาใกล้ ๆ',
   tip:'เส้นทางเที่ยวทุกสายเริ่มและจบที่นี่'},
-{id:'langpae',n:'หลังแป',c:'base',x:815,y:540,lp:'r',out:1,dist:'3,500 ม.',seg:'จากศรีฐาน 5,500 ม.',
+{id:'langpae',hrs:'เริ่มเดินลงเขา 07.00–13.00 น.',n:'หลังแป',c:'base',x:815,y:540,lp:'r',out:1,dist:'3,500 ม.',seg:'จากศรีฐาน 5,500 ม.',
   desc:'ขอบภูจุดที่ทางขึ้นมาบรรจบที่ราบ มีป้าย “ครั้งหนึ่งในชีวิต เราคือผู้พิชิตภูกระดึง” ให้ถ่ายรูปเป็นที่ระลึก',
   tip:'จากนี้เป็นทางราบถึงวังกวาง 3,500 ม.'},
-{id:'sithan',n:'ศูนย์บริการฯ ศรีฐาน',s:'ศรีฐาน (ตีนภู)',c:'base',x:985,y:735,lp:'b',out:1,dist:'จุดเริ่มเดินขึ้นเขา',seg:'ถึงหลังแป 5,500 ม.',
+{id:'sithan',hrs:'เริ่มเดินขึ้นเขา 06.00–12.00 น.',n:'ศูนย์บริการฯ ศรีฐาน',s:'ศรีฐาน (ตีนภู)',c:'base',x:985,y:735,lp:'b',out:1,dist:'จุดเริ่มเดินขึ้นเขา',seg:'ถึงหลังแป 5,500 ม.',
   desc:'ที่ทำการอุทยานฯ ด้านล่าง ลงทะเบียน ชำระค่าธรรมเนียม และชั่งสัมภาระฝากลูกหาบก่อนเริ่มเดิน',
   tip:'เริ่มเดินแต่เช้าจะไม่ร้อนและมีเวลาพักตามซำ'}
 ];
@@ -706,7 +713,7 @@ $('zout').addEventListener('click',function(){flyTo(view.cx,view.cy,Math.max(1,v
 $('zfit').addEventListener('click',function(){flyTo(W/2,H/2,1)});
 function homeZ(){return cw<600?Math.max(fillZ(),.62*baseW()/cw):1}
 function focusPin(id){var p=byId[id];measure();flyTo(p.x,p.y,Math.max(view.z,fillZ(),cw<600?2:1.3))}
-function recenter(){measure();if(flying)return;if(!(dayHL&&sheetMode==='plan')){view.cx=byId[selected].x;view.cy=byId[selected].y}draw()}
+function recenter(){measure();if(flying)return;if(!(dayHL&&sheetMode==='plan')&&(cw<600||view.z>1.05)){view.cx=byId[selected].x;view.cy=byId[selected].y}draw()}
 function setFull(on){
   $('app').classList.toggle('full',on);$('zfull').setAttribute('aria-pressed',on);
   $('zfull').setAttribute('aria-label',on?'ออกจากโหมดเต็มจอ':'ดูแผนที่เต็มจอ');
@@ -1025,7 +1032,7 @@ function showDay(i){
 }
 function setDayHL(on){
   dayHL=on?dayIds.slice():null;
-  strip.querySelectorAll('.stop').forEach(function(b,j){b.setAttribute('aria-pressed',on?j-1===dayIdx:j===0)});
+  var dc=$('daychip');dc.hidden=!on;if(on)dc.textContent='แผน'+DAYS[dayIdx].tab+' · ล้างเส้นทาง ✕';
   sheetMode=on?'plan':'place';
   applyFilter();paintSheetPlan();paintSheet();paintRoute();
 }
@@ -1104,19 +1111,30 @@ function frameDay(){
     if(dayIds.indexOf(selected)<0)select(dayIds[0],false,true);
   });
 }
-var DAYC=['#2563eb','#047857','#7c3aed','#c2410c'],DAYB=['450 กม.','9 กม.','28 กม.','9.5 กม.'],strip=$('strip');
-var allB=h('button','stop all','ทั้งทริป');allB.type='button';allB.id='stop-all';
-allB.addEventListener('click',function(){setDayHL(false);measure();flyTo(cw<600?byId[selected].x:W/2,cw<600?byId[selected].y:H/2,homeZ())});
-strip.appendChild(allB);
+var DAYC=['#2563eb','#047857','#7c3aed','#c2410c'];
+$('daychip').addEventListener('click',function(){setDayHL(false);measure();flyTo(cw<600?byId[selected].x:W/2,cw<600?byId[selected].y:H/2,homeZ())});
 DAYS.forEach(function(d,i){
   var b=h('button','chip');b.type='button';b.id='day-'+i;b.style.setProperty('--c',DAYC[i]);b.appendChild(h('b',null,d.tab));b.appendChild(h('span',null,d.sub.split(' · ')[0]));
   b.addEventListener('click',function(){showDay(i)});daytabs.appendChild(b);
-  var s=h('button','stop');s.type='button';s.id='stop-'+i;s.style.setProperty('--c',DAYC[i]);
-  s.style.minWidth=[82,76,92,76][i]+'px';
-  s.appendChild(h('span','t',d.tab));s.appendChild(h('span','s',d.sub));s.appendChild(h('span','badge',DAYB[i]));
-  s.addEventListener('click',function(){showDay(i);setDayHL(true);frameDay();setTimeout(function(){$('sheet').scrollTop=0},120);s.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'})});
-  strip.appendChild(s);
 });
+$('tomap').addEventListener('click',function(){go('map')});
+/* เวลาเปิด–ปิดของแต่ละจุด (ตามแผนที่ทางการ) */
+(function(){
+  var box=$('hourscard');box.appendChild(h('h3',null,'เวลาเปิด–ปิดและเวลาเริ่มเดิน'));
+  function row(parent,name,time,id){
+    var r=id?h('button','hrow'):h('div','hrow');if(id)r.type='button';
+    r.appendChild(h('span',null,name));r.appendChild(h('span',null,time));
+    if(id)r.addEventListener('click',function(){select(id,true);toggleList(false)});
+    parent.appendChild(r);
+  }
+  function group(title,color,rows){
+    var g=h('div','hgroup'),t=h('h4'),d=h('i');d.style.background=color;t.appendChild(d);t.appendChild(document.createTextNode(title));g.appendChild(t);
+    rows.forEach(function(r){row(g,r[0],r[1],r[2])});box.appendChild(g);
+  }
+  group('ทางขึ้น–ลงเขา','var(--primary)',[['เริ่มเดินขึ้นเขา','06.00–12.00 น.','sithan'],['เริ่มเดินลงเขา','07.00–13.00 น.','langpae']]);
+  group('เข้าชมได้เอง','#eab308',[['โซนหน้าผา (ผาเมษา–ผาหล่มสัก)','เริ่ม 08.00 น.'],['ผาหล่มสัก','อยู่ได้ไม่เกิน 18.00 น.','lomsak'],['อ่างเก็บน้ำไพรัตน์–ธารไชย','06.30–17.00 น.','reservoir'],['น้ำตกถ้ำใหญ่','08.30–14.00 น.','thamyai']]);
+  group('ต้องมีเจ้าหน้าที่นำทาง (1 รอบ/วัน)','#f97316',[['ผานกแอ่น','05.00–07.00 น.','nokaen'],['น้ำตกเพ็ญพบใหม่','08.30–14.00 น.','penphopmai'],['น้ำตกโผนพบ','08.30–14.00 น.','phonphop'],['น้ำตกเพ็ญพบ','08.30–14.00 น.','penphop']]);
+})();
 $('dayonmap').addEventListener('click',function(){setDayHL(true);go('map');frameDay()});
 
 /* ---------- checklist (จำไว้ในเครื่องนี้เท่านั้น) ---------- */
@@ -1139,7 +1157,7 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(function(){sel
 show((location.hash||'').slice(1)||'map');
 requestAnimationFrame(function(){
   measure();var p=byId[selected];
-  view={cx:p.x,cy:p.y,z:cw<600?homeZ():1.25};draw();
+  view=cw<600?{cx:p.x,cy:p.y,z:homeZ()}:{cx:W/2,cy:H/2,z:1};draw();
 });
 })();
 </script>
