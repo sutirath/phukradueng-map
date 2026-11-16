@@ -323,6 +323,16 @@ button.hrow{cursor:pointer}
 .prep{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:8px}
 .prep b{font-weight:600;color:var(--ink)}
 .foot{font-size:.75rem;color:var(--muted)}
+.stn{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.stn li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:9px 0;border-top:1px solid #e5e7eb;font-size:.9375rem}
+.stn li:first-child{border-top:0}
+.stn .dot{width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--primary-deep);justify-self:center}
+.stn .nm{color:var(--ink);font-weight:500}
+.stn .nm small{display:block;font-size:.75rem;font-weight:400;color:var(--muted)}
+.stn .am{margin-left:6px}
+.stn .ds{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stn .ds b{display:block;font-weight:700;color:var(--ink)}
+.stn .ds span{font-size:.75rem;color:var(--muted)}
 
 @media (prefers-reduced-motion:reduce){
   button,.pin .body{transition:none}
@@ -525,10 +535,9 @@ button.hrow{cursor:pointer}
         </section>
         <section class="card">
           <h3>ทางขึ้นภู: ศรีฐาน → หลังแป</h3>
-          <p class="lead">เดินเท้าขึ้นเขา 5.5 กม. ราว 3–5 ชั่วโมง ทุก “ซำ” เป็นจุดพักที่มีร้านอาหาร น้ำดื่ม และห้องน้ำ จากหลังแปเดินทางราบต่อถึงศูนย์ฯ วังกวาง</p>
-          <ol class="climb">
-            <li>ศรีฐาน</li><li>ปางกกค่า</li><li>ซำแฮก</li><li>ซำบอน</li><li>ซำกกกอก</li><li>ซำกอซาง</li><li>พร่านพรานแป</li><li>ซำกกหว้า</li><li>ซำกกไผ่</li><li>ซำกกโดน</li><li>ซำแคร่</li><li>หลังแป</li>
-          </ol>
+          <p class="lead">เดินเท้าขึ้นเขาราว 5.5 กม. ใช้เวลาประมาณ 3–5 ชั่วโมง ตามแผนที่มีร้านอาหาร 🍴 และห้องน้ำ 🚻 เฉพาะบางซำ จากหลังแปเดินทางราบต่อถึงศูนย์ฯ วังกวาง</p>
+          <ol class="stn" id="stations"></ol>
+          <p class="foot">ระยะระหว่างจุดและสิ่งอำนวยความสะดวกอ้างอิงแผนที่ของ "ชิลไปไหน" ระยะซำกกโดน → ซำแคร่ (1,300 ม.) ไม่ตรงกับพิกัดซึ่งห่างราว 340 ม. และระยะซำแคร่ → หลังแป คำนวณจากระยะรวม 5.5 กม. ควรตรวจกับป้ายจริงที่ทางขึ้น</p>
         </section>
         <section class="card">
           <h3>ควรรู้ก่อนไป</h3>
@@ -646,6 +655,7 @@ var filter='all', selected='wangkwang', dayHL=null, dayIdx=2, curView='map';
 var svg=$('map'), pins=$('pins'), pinEls={}, placeEls={};
 
 /* terrain drawn in svg */
+var AM={'ซำแฮก':'🍴','ซำกกกอก':'🍴','พร่านพรานแป':'🍴🚻','ซำกกโดน':'🍴🚻'};
 var SAMS=[{n:'ปางกกค่า',ll:[16.871747,101.839214],x:3131.0,y:1805.9},{n:'ซำแฮก',ll:[16.872979,101.836401],x:3071.0,y:1778.6},{n:'ซำบอน',ll:[16.871067,101.830018],x:2935.1,y:1820.9},{n:'ซำกกกอก',ll:[16.871192,101.827535],x:2882.2,y:1818.2},{n:'ซำกอซาง',ll:[16.872198,101.826269],x:2855.2,y:1795.9},{n:'พร่านพรานแป',ll:[16.872511,101.82485],x:2825.0,y:1789.0},{n:'ซำกกหว้า',ll:[16.873317,101.821432],x:2752.1,y:1771.1},{n:'ซำกกไผ่',ll:[16.873916,101.818229],x:2683.9,y:1757.9},{n:'ซำกกโดน',ll:[16.875214,101.816181],x:2640.3,y:1729.2},{n:'ซำแคร่',ll:[16.873924,101.813004],x:2572.6,y:1757.7}];
 var EDGES={
   climb:{d:'M3270.4 1818.9C3247.2 1816.7 3164.2 1812.6 3131.0 1805.9C3097.8 1799.2 3103.7 1776.1 3071.0 1778.6C3038.3 1781.1 2966.6 1814.3 2935.1 1820.9C2903.6 1827.5 2895.5 1822.4 2882.2 1818.2C2868.9 1814.0 2864.7 1800.8 2855.2 1795.9C2845.7 1791.0 2842.2 1793.1 2825.0 1789.0C2807.8 1784.9 2775.6 1776.3 2752.1 1771.1C2728.6 1765.9 2702.5 1764.9 2683.9 1757.9C2665.3 1750.9 2658.9 1729.2 2640.3 1729.2C2621.8 1729.2 2599.8 1742.3 2572.6 1757.7C2545.4 1773.1 2492.9 1810.8 2477.0 1821.4',cat:'base',cls:'climb',lbl:'5,500 ม.',off:[0,40]},
@@ -680,7 +690,7 @@ var EDGES={
   SAMS.forEach(function(s,i){
     var up=i%2===0;
     el('circle',{class:'sam',cx:s.x,cy:s.y,r:5},$('sams'));
-    el('text',{class:'samlbl',x:s.x,y:s.y+(up?-12:21),'text-anchor':'middle'},$('sams')).textContent=s.n;
+    el('text',{class:'samlbl',x:s.x,y:s.y+(up?-12:21),'text-anchor':'middle'},$('sams')).textContent=s.n+(AM[s.n]?' '+AM[s.n]:'');
   });
 })();
 
@@ -753,7 +763,7 @@ function initReal(){
   var a=byId.sithan.ll,z=byId.langpae.ll,line=[a];
   SAMS.forEach(function(s){
     var name=s.n,ll=s.ll;line.push(ll);
-    L.marker(ll,{icon:L.divIcon({className:'rmk',html:'<div class="rm sam"><i></i><span class="rl">'+name+'</span></div>',iconSize:[14,14],iconAnchor:[7,7]}),interactive:false,keyboard:false}).addTo(lmap);
+    L.marker(ll,{icon:L.divIcon({className:'rmk',html:'<div class="rm sam"><i></i><span class="rl">'+name+(AM[name]?' '+AM[name]:'')+'</span></div>',iconSize:[14,14],iconAnchor:[7,7]}),interactive:false,keyboard:false}).addTo(lmap);
   });
   line.push(z);L.polyline(line,{color:'#2b7070',weight:3,dashArray:'6 8',opacity:.8,interactive:false}).addTo(lmap);
   lmap.on('zoomend',labelZoom);
@@ -1263,6 +1273,24 @@ $('tomap').addEventListener('click',function(){go('map')});
   group('ต้องมีเจ้าหน้าที่นำทาง (1 รอบ/วัน)','#f97316',[['ผานกแอ่น','05.00–07.00 น.','nokaen'],['น้ำตกเพ็ญพบใหม่','08.30–14.00 น.','penphopmai'],['น้ำตกโผนพบ','08.30–14.00 น.','phonphop'],['น้ำตกเพ็ญพบ','08.30–14.00 น.','penphop']]);
 })();
 $('dayonmap').addEventListener('click',function(){setDayHL(true);go('map');frameDay()});
+
+/* ทางขึ้นภู: ระยะระหว่างจุดตามแผนที่ ชิลไปไหน */
+(function(){
+  var ST=[['ศรีฐาน (ตีนภู)',0,'🍴🚻'],['ปางกกค่า',800,''],['ซำแฮก',200,'🍴'],['ซำบอน',700,''],['ซำกกกอก',440,'🍴'],['ซำกอซาง',null,''],['พร่านพรานแป',440,'🍴🚻'],['ซำกกหว้า',460,''],['ซำกกไผ่',300,''],['ซำกกโดน',480,'🍴🚻'],['ซำแคร่',1300,''],['หลังแป (สุดทางขึ้น)',380,'']];
+  var ol=$('stations'),cum=0,fmt=function(n){return n.toLocaleString('en-US')};
+  ST.forEach(function(s,i){
+    var li=h('li'),nm=h('div','nm'),ds=h('div','ds');
+    li.appendChild(h('span','dot'));
+    nm.appendChild(document.createTextNode(s[0]));
+    if(s[2])nm.appendChild(h('span','am',s[2]));
+    if(s[0]==='ซำกอซาง')nm.appendChild(h('small',null,'ไม่มีระยะในแผนที่ที่ใช้อ้างอิง'));
+    if(s[0].indexOf('หลังแป')===0)nm.appendChild(h('small',null,'ระยะคำนวณจากรวม 5.5 กม.'));
+    if(s[1]!==null&&i>0){cum+=s[1];ds.appendChild(h('b',null,'+'+fmt(s[1])+' ม.'));ds.appendChild(h('span',null,'รวม '+fmt(cum)+' ม.'))}
+    else if(i===0)ds.appendChild(h('span',null,'จุดเริ่ม'));
+    else ds.appendChild(h('span',null,'—'));
+    li.appendChild(nm);li.appendChild(ds);ol.appendChild(li);
+  });
+})();
 
 /* ---------- checklist (จำไว้ในเครื่องนี้เท่านั้น) ---------- */
 var ITEMS=['เสื้อกันหนาว','รองเท้าเดินป่า','ไฟฉาย','Power bank','พาสปอร์ตอุทยานฯ'],done={};
