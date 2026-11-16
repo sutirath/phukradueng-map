@@ -913,6 +913,19 @@ var GR=(function(){
   });
   return adj;
 })();
+/* ระยะเดินเท้าจาก Google Maps (ตารางที่ผู้ใช้ให้มา) รวมสะสมตามลำดับในแต่ละช่วงที่เป็นเส้นทางต่อเนื่อง */
+var GCH=[
+ {sithan:0,langpae:4780,wangkwang:7980},
+ {makduk:0,nanoi:1200,jamsin:1800,yiapmek:3900,daeng:5800,lomsak:8200},
+ {'wk-fall':0,penphop:650,penphopmai:1450,phonphop:2050,thamyai:3750,thansawan:3890}
+];
+var GPAIR={'wangkwang|nokaen':2200,'nokaen|makduk':4700};
+function gmapDist(a,b){
+  var k=[a,b].sort().join('|'),i;
+  for(i in GPAIR)if(i.split('|').sort().join('|')===k)return GPAIR[i];
+  for(i=0;i<GCH.length;i++)if(GCH[i][a]!==undefined&&GCH[i][b]!==undefined)return Math.abs(GCH[i][a]-GCH[i][b]);
+  return null;
+}
 function trailPath(a,b){
   var dist={},prev={},todo=Object.keys(GR);dist[a]=0;
   while(todo.length){
@@ -956,13 +969,15 @@ function ruleText(){
   line.appendChild(h('span','ab','A'));line.appendChild(document.createTextNode(A.n+' '));
   line.appendChild(h('span','ab','B'));line.appendChild(document.createTextNode(B.n));box.appendChild(line);
   if(tp){
-    box.appendChild(h('div','big','ตามทางเดิน ราว '+fmtT(tp.m)));
+    box.appendChild(h('div','big','ตามป้ายอุทยาน ราว '+fmtT(tp.m)));
     var names=tp.path.filter(function(k){return byId[k]}).map(function(k){return byId[k].s||byId[k].n});
     if(names.length>2)box.appendChild(h('small',null,'ผ่าน: '+names.slice(1,-1).join(' → ')+' · ตามป้ายอุทยาน'));
     
   }
-  if(A.ll&&B.ll)box.appendChild(h('div',tp?null:'big','เส้นตรงบนแผนที่ ราว '+fmtD(hav(A.ll,B.ll))));
-  if(!tp)box.appendChild(h('small',null,'ไม่มีตัวเลขระยะตามทางเดินของคู่นี้ในแผนที่อุทยาน'));
+  var gd=gmapDist(rl.a,rl.b);
+  if(gd!==null)box.appendChild(h('div',tp?null:'big','Google Maps (เดินเท้า) ราว '+fmtT(gd)));
+  if(A.ll&&B.ll)box.appendChild(h('div',tp||gd!==null?null:'big','เส้นตรงบนแผนที่ ราว '+fmtD(hav(A.ll,B.ll))));
+  if(!tp&&gd===null)box.appendChild(h('small',null,'ไม่มีตัวเลขระยะตามทางเดินของคู่นี้'));
   var sw=h('button','swap','สลับ A ↔ B');sw.type='button';
   sw.addEventListener('click',function(){var t=rl.a;rl.a=rl.b;rl.b=t;ruleText();paintRule()});
   box.appendChild(sw);
