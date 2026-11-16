@@ -1,6 +1,6 @@
 /* Service worker: ใช้ออฟไลน์ได้ */
-var V='pk-fd7054c0';
-var PRE=["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png", "vendor/leaflet/leaflet.js", "vendor/leaflet/leaflet.css", "vendor/leaflet/images/layers.png", "vendor/leaflet/images/layers-2x.png", "photos/langpae.jpg", "photos/lomsak.jpg", "photos/makduk.jpg", "photos/nanoi.jpg", "photos/nokaen.jpg", "photos/penphopmai.jpg", "photos/phonphop.jpg", "photos/thamyai.jpg", "photos/wangkwang.jpg", "photos/yiapmek.jpg"];
+var V='pk-2c554f77';
+var PRE=["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png", "vendor/leaflet/leaflet.js", "vendor/leaflet/leaflet.css", "vendor/leaflet/images/layers.png", "vendor/leaflet/images/layers-2x.png", "photos/anodat.jpg", "photos/langpae.jpg", "photos/lomsak.jpg", "photos/makduk.jpg", "photos/nanoi.jpg", "photos/nokaen.jpg", "photos/penphopmai.jpg", "photos/phonphop.jpg", "photos/thamyai.jpg", "photos/wangkwang.jpg", "photos/wk-fall.jpg", "photos/yiapmek.jpg"];
 var FONT_CSS="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap";
 var TILES='tiles-v1',TILE_MAX=700;
 var TILE_HOSTS=['a.tile.opentopomap.org','server.arcgisonline.com','tile.openstreetmap.org'];

@@ -386,7 +386,7 @@ button.hrow{cursor:pointer}
           <g id="trees"></g>
           <text class="maptxt" x="420" y="262" text-anchor="middle">เขตป่าดิบเขา</text>
           <text class="maptxt" x="190" y="478" text-anchor="middle">เขตป่าดิบเขา</text>
-          <text class="maptxt" x="330" y="580" text-anchor="middle">เขตทุ่งหญ้าและป่าสน</text>
+          <text class="maptxt" x="330" y="492" text-anchor="middle">เขตทุ่งหญ้าและป่าสน</text>
           <g id="trails"></g>
           <g id="route" pointer-events="none"></g>
           <g id="dlbls"></g>
@@ -538,55 +538,70 @@ var CATS={
   base:{name:'จุดบริการ',color:'var(--m-transport)'}
 };
 var P=[
-{id:'lomsak',ll:[16.8573,101.7475],llq:'est',n:'ผาหล่มสัก',c:'cliff',x:150,y:700,lp:'l',out:1,dist:'~9,360 ม.',seg:'จากผาแดง 2,420 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น. อยู่ได้ไม่เกิน 18.00 น.',
+{id:'lomsak',ll:[16.859722,101.726667],llq:'user',n:'ผาหล่มสัก',c:'cliff',x:150,y:700,lp:'l',out:1,dist:'~9,360 ม.',seg:'จากผาแดง 2,420 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น. อยู่ได้ไม่เกิน 18.00 น.',
   desc:'สัญลักษณ์ของภูกระดึง ชะง่อนหินทรายยื่นออกไปกลางอากาศ มีต้นสนโดดเดี่ยวยืนคู่กัน มองเห็นทิวเขาซ้อนกันไกลสุดตา',
   tip:'เดินไป–กลับเกือบทั้งวัน ขากลับมืดแน่นอน ต้องพกไฟฉาย ตามกำหนดของอุทยานอยู่ที่ผาได้ไม่เกิน 18.00 น.'},
-{id:'daeng',ll:[16.85983,101.7608],llq:'est',n:'ผาแดง',c:'cliff',x:268,y:712,lp:'b',out:1,dist:'~6,940 ม.',seg:'จากผาเหยียบเมฆ 1,900 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'daeng',ll:[16.857602,101.748226],llq:'user',n:'ผาแดง',c:'cliff',x:268,y:712,lp:'b',out:1,dist:'~6,940 ม.',seg:'จากผาเหยียบเมฆ 1,900 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'หน้าผาหินทรายสีออกแดง จุดชมวิวกว้างก่อนถึงผาหล่มสัก คนน้อยกว่าและนั่งชมแสงเย็นได้สบาย',
   tip:'ถ้าไปไม่ทันผาหล่มสัก ชมพระอาทิตย์ตกที่นี่แทนได้'},
-{id:'yiapmek',ll:[16.86182,101.77126],llq:'est',n:'ผาเหยียบเมฆ',c:'cliff',x:388,y:696,lp:'b',out:1,dist:'~5,040 ม.',seg:'จากผานาน้อย 1,560 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'yiapmek',ll:[16.860529,101.765682],llq:'user',n:'ผาเหยียบเมฆ',c:'cliff',x:388,y:696,lp:'b',out:1,dist:'~5,040 ม.',seg:'จากผานาน้อย 1,560 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'หน้าผาที่ช่วงเช้าหน้าหนาวมักมีทะเลหมอกลอยอยู่ใต้เท้า เป็นที่มาของชื่อ',
   tip:'จุดพักกลางทางที่ดีบนเส้นทางเลียบผา'},
-{id:'nanoi',ll:[16.86345,101.77984],llq:'est',n:'ผานาน้อย',c:'cliff',x:495,y:668,lp:'b',out:1,dist:'~3,480 ม.',seg:'จากผาจำศีล 550 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'nanoi',ll:[16.864235,101.778953],llq:'user',n:'ผานาน้อย',c:'cliff',x:495,y:668,lp:'b',out:1,dist:'~3,480 ม.',seg:'จากผาจำศีล 550 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'จุดชมวิวมองลงไปเห็นที่ราบและทุ่งนาเล็ก ๆ ด้านล่างภู บรรยากาศเงียบสงบ',
   tip:'แวะพักสั้น ๆ ระหว่างเดินเลียบผา'},
-{id:'jamsin',ll:[16.86402,101.78286],llq:'user',n:'ผาจำศีล',c:'cliff',x:595,y:648,lp:'t',dist:'~2,930 ม.',seg:'จากผาหมากดูก 670 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'jamsin',ll:[16.864451,101.784704],llq:'user',n:'ผาจำศีล',c:'cliff',x:595,y:648,lp:'t',dist:'~2,930 ม.',seg:'จากผาหมากดูก 670 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'ลานหินริมผาเงียบ ๆ ถัดจากผาหมากดูก เหมาะนั่งพักรับลมและชมวิวทิศใต้',
   tip:'เส้นทางเลียบผาช่วงนี้เดินและปั่นง่าย'},
-{id:'makduk',ll:[16.86566,101.78883],llq:'est',n:'ผาหมากดูก',c:'cliff',x:695,y:626,lp:'b',out:1,dist:'2,260 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'makduk',ll:[16.865278,101.789722],llq:'user',n:'ผาหมากดูก',c:'cliff',x:695,y:626,lp:'b',out:1,dist:'2,260 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'จุดชมพระอาทิตย์ตกที่ใกล้ที่พักที่สุดในกลุ่มผาริมทางเลียบผา ลานหินกว้าง',
   tip:'เหมาะกับวันแรกที่เพิ่งขึ้นถึงยอดภูและยังล้าอยู่'},
-{id:'maysa',ll:[16.87032,101.80579],llq:'est',n:'ผาเมษา',c:'cliff',x:775,y:606,lp:'b',out:1,dist:'~3,800 ม.',seg:'จากหลังแป 300 ม. · จากผาหมากดูก 1,900 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'maysa',ll:[16.867875,101.807471],llq:'user',n:'ผาเมษา',c:'cliff',x:775,y:606,lp:'b',out:1,dist:'~3,800 ม.',seg:'จากหลังแป 300 ม. · จากผาหมากดูก 1,900 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'หน้าผาที่อยู่ใกล้หลังแปที่สุด เป็นจุดแรกของเส้นทางเลียบผาฝั่งตะวันออก',
   tip:'เดินต่อจากหลังแปได้ไม่ไกล เหมาะแวะก่อนลงเขา'},
-{id:'nokaen',ll:[16.893314,101.799873],llq:'photo',n:'ผานกแอ่น',c:'cliff',x:745,y:411,lp:'r',out:1,dist:'1,590 ม.',tag:'ชมพระอาทิตย์ขึ้น',acc:'guide',hrs:'05.00–07.00 น. (1 รอบ/วัน)',
+{id:'nokaen',ll:[16.892954,101.800048],llq:'user',n:'ผานกแอ่น',c:'cliff',x:745,y:411,lp:'r',out:1,dist:'1,590 ม.',tag:'ชมพระอาทิตย์ขึ้น',acc:'guide',hrs:'05.00–07.00 น. (1 รอบ/วัน)',
   desc:'จุดชมพระอาทิตย์ขึ้นยอดนิยม มองเห็นภูผาจิตและทะเลหมอกยามเช้า',
   tip:'ต้องไปพร้อมเจ้าหน้าที่นำทาง รอบเดียวต่อวัน ออกเดินราวตี 5 อากาศหนาวจัด เตรียมเสื้อกันหนาวและไฟฉาย'},
-{id:'thamyai',ll:[16.88485,101.776039],llq:'photo',n:'น้ำตกถ้ำใหญ่',s:'ถ้ำใหญ่',c:'water',x:480,y:510,lp:'l',dist:'~880 ม.',seg:'จากลานพระฯ 240 ม.',acc:'self',hrs:'08.30–14.00 น.',
+{id:'thamyai',ll:[16.884851,101.776131],llq:'user',n:'น้ำตกถ้ำใหญ่',s:'ถ้ำใหญ่',c:'water',x:480,y:510,lp:'l',dist:'~880 ม.',seg:'จากลานพระฯ 240 ม.',acc:'self',hrs:'08.30–14.00 น.',
   desc:'จุดถ่ายรูปใบเมเปิลแดงที่มีชื่อที่สุดบนภู ธารน้ำไหลผ่านโขดหินและเพิงผาในป่าทึบ',
   tip:'แสงสวยช่วงสาย ถ้ามาเพื่อใบเมเปิลควรมาปลาย ธ.ค. – ม.ค.'},
-{id:'penphop',ll:[16.8924,101.7752],llq:'est',n:'น้ำตกเพ็ญพบ',s:'เพ็ญพบ',c:'water',x:538,y:448,lp:'l',dist:'~2,020 ม.',seg:'จากน้ำตกถ้ำใหญ่ 1,140 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
+{id:'penphop',ll:[16.892373,101.773273],llq:'user',n:'น้ำตกเพ็ญพบ',s:'เพ็ญพบ',c:'water',x:538,y:448,lp:'l',dist:'~2,020 ม.',seg:'จากน้ำตกถ้ำใหญ่ 1,140 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
   desc:'น้ำตกม่านโค้งเหนือแอ่งน้ำ ตั้งชื่อตามการค้นพบในคืนวันเพ็ญ',
   tip:'ต้องไปพร้อมเจ้าหน้าที่นำทาง รอบเดียวต่อวัน'},
-{id:'phonphop',ll:[16.8946,101.7749],llq:'est',n:'น้ำตกโผนพบ',s:'โผนพบ',c:'water',x:548,y:398,lp:'l',dist:'~2,360 ม.',seg:'จากน้ำตกเพ็ญพบ 340 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
+{id:'phonphop',ll:[16.893838,101.774811],llq:'user',n:'น้ำตกโผนพบ',s:'โผนพบ',c:'water',x:548,y:398,lp:'l',dist:'~2,360 ม.',seg:'จากน้ำตกเพ็ญพบ 340 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
   desc:'น้ำตกหลายชั้นกลางป่า ตั้งชื่อตาม โผน กิ่งเพชร แชมป์โลกคนแรกของไทย',
   tip:'ทางลงไปหน้าน้ำตกค่อนข้างลื่น เดินระวัง และต้องไปพร้อมเจ้าหน้าที่นำทาง'},
-{id:'penphopmai',ll:[16.898286,101.774467],llq:'photo',n:'น้ำตกเพ็ญพบใหม่',s:'เพ็ญพบใหม่',c:'water',x:548,y:348,lp:'l',dist:'~2,570 ม.',seg:'จากน้ำตกโผนพบ 560 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
+{id:'penphopmai',ll:[16.898167,101.774683],llq:'user',n:'น้ำตกเพ็ญพบใหม่',s:'เพ็ญพบใหม่',c:'water',x:548,y:348,lp:'l',dist:'~2,570 ม.',seg:'จากน้ำตกโผนพบ 560 ม.',acc:'guide',hrs:'08.30–14.00 น. (1 รอบ/วัน)',
   desc:'น้ำตกหน้าผาหินกว้าง มีต้นเมเปิลขึ้นริมธาร ช่วงปลายปีใบสีแดงร่วงลอยเต็มแอ่งน้ำ',
   tip:'น้ำมากช่วงต้นฤดู (ต.ค. – พ.ย.) ต้องไปพร้อมเจ้าหน้าที่นำทาง'},
-{id:'lanpra',ll:[16.8855,101.7809],llq:'est',n:'ลานพระศรีนครินทร์',s:'ลานพระฯ',c:'pond',x:580,y:478,lp:'b',dist:'640 ม.',
+{id:'wk-fall',ll:[16.892733,101.780983],llq:'user',n:'น้ำตกวังกวาง',s:'นต.วังกวาง',c:'water',x:640,y:375,lp:'r',dist:'ราว 980 ม. (เส้นตรง)',
+  desc:'น้ำตกที่อยู่ใกล้ที่พักที่สุด สายน้ำไหลลงแอ่งหินเล็ก ๆ ท่ามกลางป่าร่มครึ้ม',
+  tip:'อยู่ทางเหนือของศูนย์ฯ วังกวาง'},
+{id:'thansawan',ll:[16.883081,101.775522],llq:'user',n:'น้ำตกธารสวรรค์',s:'ธารสวรรค์',c:'water',x:470,y:560,lp:'l',dist:'ราว 1,390 ม. (เส้นตรง)',
+  desc:'น้ำตกเล็กในป่าดิบเขา น้ำใสไหลผ่านแอ่งหิน บรรยากาศร่มเย็น',
+  tip:'อยู่ใกล้น้ำตกถ้ำใหญ่ ตำแหน่งบนแผนผังเป็นค่าประมาณ'},
+{id:'thamso',ll:[16.878133,101.7434],llq:'user',n:'น้ำตกถ้ำสอเหนือ',s:'ถ้ำสอเหนือ',c:'water',x:210,y:540,lp:'b',dist:'ราว 4,840 ม. (เส้นตรง)',
+  desc:'น้ำตกไหลลงจากเพิงผาหินขนาดใหญ่ อยู่ทางตะวันตกของยอดภู',
+  tip:'อยู่ไกลจากที่พักกว่ากลุ่มน้ำตกอื่น ตำแหน่งบนแผนผังเป็นค่าประมาณ'},
+{id:'thamsotai',ll:[16.8731,101.7481],llq:'est',n:'น้ำตกถ้ำสอใต้',s:'ถ้ำสอใต้',c:'water',x:262,y:620,lp:'b',dist:'ราว 4,510 ม. (เส้นตรง)',
+  desc:'น้ำตกทางตะวันตกของยอดภู อยู่ใกล้กับถ้ำสอเหนือ',
+  tip:'พิกัดเป็นค่าประมาณตามแนวเส้นทาง ตำแหน่งบนแผนผังเป็นค่าประมาณ'},
+{id:'lanpra',ll:[16.885185,101.782159],llq:'user',n:'ลานพระศรีนครินทร์',s:'ลานพระฯ',c:'pond',x:580,y:478,lp:'b',dist:'640 ม.',
   desc:'ลานบนเส้นทางระหว่างศูนย์ฯ วังกวางกับกลุ่มน้ำตก มีรูปปั้นประดิษฐานอยู่ตามที่แผนที่ของอุทยานระบุ',
   tip:'เป็นจุดแยกไปเส้นทางน้ำตก'},
-{id:'reservoir',ll:[16.8837,101.7889],llq:'est',n:'อ่างเก็บน้ำไพรัตน์–ธารไชย',s:'อ่างไพรัตน์ฯ',c:'pond',x:669,y:545,lp:'bl',dist:'350 ม.',acc:'self',hrs:'06.30–17.00 น.',
+{id:'reservoir',ll:[16.883922,101.788921],llq:'user',n:'อ่างเก็บน้ำไพรัตน์–ธารไชย',s:'อ่างไพรัตน์ฯ',c:'pond',x:669,y:545,lp:'bl',dist:'350 ม.',acc:'self',hrs:'06.30–17.00 น.',
   desc:'อ่างเก็บน้ำเล็ก ๆ ใกล้ที่พัก เช้าตรู่มีหมอกลอยเหนือผิวน้ำ เดินไปชมได้ง่ายก่อนเก็บของลงเขา',
   tip:'ไปช่วง 06.30 – 07.30 น. ก่อนหมอกจาง เปิดให้เข้าชมถึง 17.00 น.'},
-{id:'wangkwang',ll:[16.8862,101.7868],llq:'est',n:'ศูนย์บริการฯ วังกวาง',s:'วังกวาง',c:'base',x:652,y:448,lp:'tl',dist:'จุดพักแรมบนยอดภู',
+{id:'anodat',ll:[16.876783,101.760162],llq:'user',n:'สระอโนดาต',c:'pond',x:320,y:555,lp:'b',dist:'ราว 3,160 ม. (เส้นตรง)',
+  desc:'สระน้ำนิ่งล้อมด้วยป่าสน เงาต้นสนสะท้อนผิวน้ำ ช่วงปลายหนาวมีดอกไม้ป่าบานริมสระ',
+  tip:'อยู่ทางตะวันตกของกลุ่มน้ำตก ตำแหน่งบนแผนผังเป็นค่าประมาณ'},
+{id:'wangkwang',ll:[16.886953,101.78792],llq:'user',n:'ศูนย์บริการฯ วังกวาง',s:'วังกวาง',c:'base',x:652,y:448,lp:'tl',dist:'จุดพักแรมบนยอดภู',
   desc:'ศูนย์กลางของยอดภู มีลานกางเต็นท์ บ้านพัก เต็นท์ให้เช่า ร้านอาหาร และจุดเช่าจักรยาน มักมีกวางป่าเดินมาใกล้ ๆ',
   tip:'เส้นทางเที่ยวทุกสายเริ่มและจบที่นี่'},
-{id:'langpae',ll:[16.871056,101.808483],llq:'photo',hrs:'เริ่มเดินลงเขา 07.00–13.00 น.',n:'หลังแป',c:'base',x:815,y:540,lp:'r',out:1,dist:'3,500 ม.',seg:'จากศรีฐาน 5,500 ม.',
+{id:'langpae',ll:[16.871046,101.808515],llq:'user',hrs:'เริ่มเดินลงเขา 07.00–13.00 น.',n:'หลังแป',c:'base',x:815,y:540,lp:'r',out:1,dist:'3,500 ม.',seg:'จากศรีฐาน 5,500 ม.',
   desc:'ขอบภูจุดที่ทางขึ้นมาบรรจบที่ราบ มีป้าย “ครั้งหนึ่งในชีวิต เราคือผู้พิชิตภูกระดึง” ให้ถ่ายรูปเป็นที่ระลึก',
   tip:'จากนี้เป็นทางราบถึงวังกวาง 3,500 ม.'},
-{id:'sithan',ll:[16.8712,101.8473],llq:'est',hrs:'เริ่มเดินขึ้นเขา 06.00–12.00 น.',n:'ศูนย์บริการฯ ศรีฐาน',s:'ศรีฐาน (ตีนภู)',c:'base',x:985,y:735,lp:'b',out:1,dist:'จุดเริ่มเดินขึ้นเขา',seg:'ถึงหลังแป 5,500 ม.',
+{id:'sithan',ll:[16.871158,101.845757],llq:'user',hrs:'เริ่มเดินขึ้นเขา 06.00–12.00 น.',n:'ศูนย์บริการฯ ศรีฐาน',s:'ศรีฐาน (ตีนภู)',c:'base',x:985,y:735,lp:'b',out:1,dist:'จุดเริ่มเดินขึ้นเขา',seg:'ถึงหลังแป 5,500 ม.',
   desc:'ที่ทำการอุทยานฯ ด้านล่าง ลงทะเบียน ชำระค่าธรรมเนียม และชั่งสัมภาระฝากลูกหาบก่อนเริ่มเดิน',
   tip:'เริ่มเดินแต่เช้าจะไม่ร้อนและมีเวลาพักตามซำ'}
 ];
@@ -605,7 +620,7 @@ var svg=$('map'), pins=$('pins'), pinEls={}, placeEls={};
 
 [[330,178],[348,192],[470,200],[505,216],[560,240],[598,266],[425,236],[385,300],[455,288],[482,322],[255,420],[285,452],[205,492],[140,508],[565,330],[640,362],[690,340],[215,524],[300,540],[160,562],[245,596],[290,630],[345,548],[480,562],[400,602],[525,596],[575,565],[705,545],[742,500],[772,522],[560,604],[450,626],[610,560],[720,590],[250,670]]
   .forEach(function(t){el('use',{href:'#tree',class:'tree',transform:'translate('+t[0]+' '+t[1]+')'},$('trees'))});
-var SAMS=['ปางกกค่า','ซำแฮก','ซำบอน','ซำกกกอก','ซำกอซาง','พร่านพรานแป','ซำกกหว้า','ซำกกไผ่','ซำกกโดน','ซำแคร่'];
+var SAMS=[{n:'ปางกกค่า',ll:[16.871747,101.839214]},{n:'ซำแฮก',ll:[16.872979,101.836401]},{n:'ซำบอน',ll:[16.871067,101.830018]},{n:'ซำกกกอก',ll:[16.871192,101.827535]},{n:'ซำกอซาง',ll:[16.872198,101.826269]},{n:'พร่านพรานแป',ll:[16.872511,101.82485]},{n:'ซำกกหว้า',ll:[16.873317,101.821432]},{n:'ซำกกไผ่',ll:[16.873916,101.818229]},{n:'ซำกกโดน',ll:[16.875214,101.816181]},{n:'ซำแคร่',ll:[16.873924,101.813004]}];
 var EDGES={
   climb:{d:'M985 735C960 715 940 685 900 650C860 620 830 575 815 540',cat:'base',cls:'climb',lbl:'5,500 ม.',at:.5,off:[-40,14]},
   direct:{d:'M678 461C705 462 745 470 770 492C797 510 810 525 815 540',cat:'base',cls:'main',lbl:'3,500 ม.',at:.5},
@@ -638,8 +653,8 @@ var EDGES={
   });
   var path=el('path',{d:EDGES.climb.d,fill:'none'},$('sams')),len=path.getTotalLength();
   $('sams').removeChild(path);
-  SAMS.forEach(function(name,i){
-    var pt=path.getPointAtLength(len*(i+1.5)/(SAMS.length+1.5)),right=true;
+  SAMS.forEach(function(s,i){
+    var name=s.n,pt=path.getPointAtLength(len*(i+1.5)/(SAMS.length+1.5)),right=true;
     el('circle',{class:'sam',cx:pt.x.toFixed(1),cy:pt.y.toFixed(1),r:5},$('sams'));
     el('text',{class:'samlbl',x:(pt.x+(right?12:-12)).toFixed(1),y:(pt.y+5).toFixed(1),'text-anchor':right?'start':'end'},$('sams')).textContent=name;
   });
@@ -700,13 +715,13 @@ function initReal(){
     var m=L.marker(p.ll,{icon:L.divIcon({className:'rmk',html:html,iconSize:[30,30],iconAnchor:[15,15]}),title:p.n,keyboard:true}).addTo(lmap);
     m.on('click',function(){select(p.id,true)});rmk[p.id]=m;
   });
-  /* ซำระหว่างศรีฐานถึงหลังแป: ตำแหน่งประมาณ วางเว้นระยะเท่ากันบนแนวตรง */
+  /* ซำระหว่างศรีฐานถึงหลังแป: ตามพิกัด Google Maps ที่ให้มา */
   var a=byId.sithan.ll,z=byId.langpae.ll,line=[a];
-  SAMS.forEach(function(name,i){
-    var t=(i+1)/(SAMS.length+1),ll=[a[0]+(z[0]-a[0])*t,a[1]+(z[1]-a[1])*t];line.push(ll);
+  SAMS.forEach(function(s){
+    var name=s.n,ll=s.ll;line.push(ll);
     L.marker(ll,{icon:L.divIcon({className:'rmk',html:'<div class="rm sam"><i></i><span class="rl">'+name+'</span></div>',iconSize:[14,14],iconAnchor:[7,7]}),interactive:false,keyboard:false}).addTo(lmap);
   });
-  line.push(z);L.polyline(line,{color:'#2b7070',weight:3,dashArray:'6 8',opacity:.75,interactive:false}).addTo(lmap);
+  line.push(z);L.polyline(line,{color:'#2b7070',weight:3,dashArray:'6 8',opacity:.8,interactive:false}).addTo(lmap);
   lmap.on('zoomend',labelZoom);
   lmap.whenReady(function(){fitReal();labelZoom();setTimeout(paintReal,0)});
 }
@@ -856,7 +871,7 @@ var ART={
  thamso:{t:'fall',w:36,tiers:1,cave:1}, khunphong:{t:'fall',w:18,tiers:1,tall:1},
  anodat:{t:'pond',pines:[20,48,92,228,268,300]}, sakaeo:{t:'pond',rock:1,small:1,pines:[40,280]},
  reservoir:{t:'pond',mist:1,wide:1,pines:[18,44,296]},
- lanpra:{t:'lan'}, maysa:{t:'cliff',sky:'day',pine:[30,90]}, wangkwang:{t:'camp'}, langpae:{t:'sign'}, sithan:{t:'foot'}
+ thamsotai:{t:'fall',w:30,tiers:1}, lanpra:{t:'lan'}, maysa:{t:'cliff',sky:'day',pine:[30,90]}, wangkwang:{t:'camp'}, langpae:{t:'sign'}, sithan:{t:'foot'}
 };
 function pine(x,y,s,c){return '<g transform="translate('+x+' '+y+') scale('+s+')"><rect x="-1.3" y="-32" width="2.6" height="32" fill="#6b4f3a"/><path d="M0 -56L9 -42H5L12 -30H-12L-5 -42H-9Z" fill="'+(c||'#3f6b4a')+'"/></g>'}
 function rnd(seed){var s=seed;return function(){s=(s*9301+49297)%233280;return s/233280}}
@@ -934,7 +949,7 @@ function art(id){
   }
   return o;
 }
-var PHOTO={"makduk": {"by": "SUPAPORN KHUMTHONGIN", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:*%E0%B9%81%E0%B8%AA%E0%B8%87%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%9C%E0%B8%B2%E0%B8%AB%E0%B8%A1%E0%B8%B2%E0%B8%81%E0%B8%94%E0%B8%B9%E0%B8%81.JPG"}, "phonphop": {"by": "Mmonthon", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:8th_place_-_Phon_Phop_Waterfall_on_Phu_Kradueng_National_Park,_Thailand.JPG"}, "langpae": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Lang_Pae_(I).jpg"}, "thamyai": {"by": "Nicetory", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Maple_leaves_and_the_Big_Cave_Waterfall,_Phu_Kradueng.jpg"}, "nanoi": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Na_Noi_Cliff_(I).jpg"}, "penphopmai": {"by": "Nicetory", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Penphopmai_Waterfall.jpg"}, "lomsak": {"by": "Billybobmac", "lic": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Pha_Lom_Sak.jpg"}, "nokaen": {"by": "Yothind", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Sun_rise_at_Nok_Aen_Cliff-1_,Phu_Kradueng_National_Park.jpg"}, "yiapmek": {"by": "Sorrasan", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Yeab_Mek_cliff.jpg"}, "wangkwang": {"by": "Anawit1", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:%E0%B8%88%E0%B8%B8%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%95%E0%B9%89%E0%B8%99%E0%B8%97%E0%B9%8C%E0%B8%AD%E0%B8%B8%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4%E0%B8%A0%E0%B8%B9%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B6%E0%B8%87.jpg"}};
+var PHOTO={"makduk": {"by": "SUPAPORN KHUMTHONGIN", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:*%E0%B9%81%E0%B8%AA%E0%B8%87%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%9C%E0%B8%B2%E0%B8%AB%E0%B8%A1%E0%B8%B2%E0%B8%81%E0%B8%94%E0%B8%B9%E0%B8%81.JPG"}, "phonphop": {"by": "Mmonthon", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:8th_place_-_Phon_Phop_Waterfall_on_Phu_Kradueng_National_Park,_Thailand.JPG"}, "langpae": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Lang_Pae_(I).jpg"}, "thamyai": {"by": "Nicetory", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Maple_leaves_and_the_Big_Cave_Waterfall,_Phu_Kradueng.jpg"}, "nanoi": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Na_Noi_Cliff_(I).jpg"}, "penphopmai": {"by": "Nicetory", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Penphopmai_Waterfall.jpg"}, "lomsak": {"by": "Billybobmac", "lic": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Pha_Lom_Sak.jpg"}, "nokaen": {"by": "Yothind", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Sun_rise_at_Nok_Aen_Cliff-1_,Phu_Kradueng_National_Park.jpg"}, "yiapmek": {"by": "Sorrasan", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Yeab_Mek_cliff.jpg"}, "wangkwang": {"by": "Anawit1", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:%E0%B8%88%E0%B8%B8%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%95%E0%B9%89%E0%B8%99%E0%B8%97%E0%B9%8C%E0%B8%AD%E0%B8%B8%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4%E0%B8%A0%E0%B8%B9%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B6%E0%B8%87.jpg"}, "anodat": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Anodard_Pond_(I).jpg"}, "wk-fall": {"by": "Orataikon", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%95%E0%B8%81%E0%B8%A7%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B8%A7%E0%B8%B2%E0%B8%87.JPG"}};
 var visited={};try{visited=JSON.parse(localStorage.getItem('pk-visited')||'{}')||{}}catch(e){}
 function nDone(){return P.filter(function(p){return visited[p.id]}).length}
 function paintDone(){
