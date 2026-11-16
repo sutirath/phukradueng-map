@@ -79,6 +79,10 @@ button:active{transform:scale(.95)}
 .mapseg button[aria-pressed="true"]{background:var(--primary-deep);color:#fff}
 .chips.floating,.zoom,.daychip,.minibar{z-index:5}
 .leaflet-top.leaflet-right{margin-top:58px}
+.tilewarn{position:absolute;top:58px;left:var(--gl);right:76px;z-index:6;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 14px;border-radius:12px;background:#fef3c7;color:#78350f;box-shadow:var(--shadow-lg);font-weight:500}
+.tilewarn span{flex:1;min-width:0}
+.tilewarn button{min-height:36px;border:0;border-radius:8px;background:#fff;color:var(--ink);font-weight:600;padding:0 10px;cursor:pointer}
+.tilewarn #tilex{padding:0 8px;background:transparent}
 .leaflet-container{font-family:var(--font);background:#dfe7e4}
 .leaflet-control-attribution{font-size:10px}
 .rmk{background:transparent;border:0}
@@ -400,6 +404,7 @@ button.hrow{cursor:pointer}
           <text class="maptxt" x="540" y="792" text-anchor="middle">แผนผังตามแผนที่เส้นทางเดินเท้าของอุทยาน ไม่ตามมาตราส่วน</text>
         </svg>
         <div id="realmap" hidden></div>
+        <div class="tilewarn" id="tilewarn" role="status" hidden><span>ภาพแผนที่โหลดไม่ครบ</span><button type="button" id="tilesat">ใช้ดาวเทียม</button><button type="button" id="tilex" aria-label="ปิด">✕</button></div>
         <div class="mapseg" id="mapseg" role="group" aria-label="ชนิดแผนที่" hidden>
           <button type="button" id="seg-plan" aria-pressed="true">แผนผัง</button>
           <button type="button" id="seg-real" aria-pressed="false">แผนที่จริง</button>
@@ -703,10 +708,20 @@ function paintReal(){
 function labelZoom(){$('realmap').classList.toggle('lbloff',lmap.getZoom()<14)}
 function initReal(){
   if(lmap||!window.L)return;
-  var topo=L.tileLayer('https://a.tile.opentopomap.org/{z}/{x}/{y}.png',{maxZoom:17,crossOrigin:true,updateWhenIdle:true,keepBuffer:3,attribution:'© <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA) · © OpenStreetMap'});
-  var sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,crossOrigin:true,updateWhenIdle:true,keepBuffer:3,attribution:'Tiles © Esri'});
-  var osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,crossOrigin:true,updateWhenIdle:true,keepBuffer:3,attribution:'© OpenStreetMap contributors'});
+  var topo=L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',{subdomains:'abc',maxZoom:17,crossOrigin:true,attribution:'© <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA) · © OpenStreetMap'});
+  var sat=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:18,crossOrigin:true,attribution:'Tiles © Esri'});
+  var osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,crossOrigin:true,attribution:'© OpenStreetMap contributors'});
   lmap=L.map('realmap',{zoomControl:false,layers:[topo],fadeAnimation:false}).setView([16.88,101.79],12);
+  var errs=0,errT=0;
+  function tileErr(e){
+    var t=e.tile;t._try=(t._try||0)+1;
+    errs++;clearTimeout(errT);errT=setTimeout(function(){errs=0},15000);
+    if(errs>=8)$('tilewarn').hidden=false;
+    if(t._try<=3)setTimeout(function(){var u=t.src;t.src='';t.src=u},900*t._try);
+  }
+  [topo,sat,osm].forEach(function(l){l.on('tileerror',tileErr);l.on('tileload',function(){errs=0;$('tilewarn').hidden=true})});
+  $('tilesat').addEventListener('click',function(){lmap.eachLayer(function(l){if(l===topo||l===osm)lmap.removeLayer(l)});sat.addTo(lmap);$('tilewarn').hidden=true});
+  $('tilex').addEventListener('click',function(){$('tilewarn').hidden=true});
   var lc={};lc['ภูมิประเทศ']=topo;lc['ดาวเทียม']=sat;lc['ถนน']=osm;
   L.control.layers(lc,null,{position:'topright'}).addTo(lmap);
   P.forEach(function(p){

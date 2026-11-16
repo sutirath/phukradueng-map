@@ -1,5 +1,5 @@
 /* Service worker: ใช้ออฟไลน์ได้ */
-var V='pk-f0d49b83';
+var V='pk-7ed0abc2';
 var PRE=["./", "index.html", "manifest.webmanifest", "icons/icon-192.png", "icons/icon-512.png", "icons/maskable-512.png", "icons/apple-touch-icon.png", "vendor/leaflet/leaflet.js", "vendor/leaflet/leaflet.css", "vendor/leaflet/images/layers.png", "vendor/leaflet/images/layers-2x.png", "photos/anodat.jpg", "photos/langpae.jpg", "photos/lomsak.jpg", "photos/makduk.jpg", "photos/nanoi.jpg", "photos/nokaen.jpg", "photos/penphopmai.jpg", "photos/phonphop.jpg", "photos/thamyai.jpg", "photos/wangkwang.jpg", "photos/wk-fall.jpg", "photos/yiapmek.jpg"];
 var FONT_CSS="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Thai:wght@400;500;600;700&display=swap";
 var TILES='tiles-v2',TILE_MAX=700;
@@ -28,10 +28,10 @@ self.addEventListener('fetch',function(e){
   var u=new URL(r.url),same=u.origin===location.origin,font=u.hostname==='fonts.googleapis.com'||u.hostname==='fonts.gstatic.com';
   if(TILE_HOSTS.indexOf(u.hostname)>=0){
     e.respondWith((async function(){
-      var c=await caches.open(TILES),hit=await c.match(r);if(hit)return hit;
+      var key=r.url.replace(/^https:\/\/[abc]\.tile\.opentopomap\.org/,'https://a.tile.opentopomap.org'),c=await caches.open(TILES),hit=await c.match(key);if(hit)return hit;
       try{
         var res=await fetch(r);
-        if(res&&res.ok&&/^image\//.test(res.headers.get('content-type')||'')){c.put(r,res.clone());c.keys().then(function(ks){if(ks.length>TILE_MAX)ks.slice(0,ks.length-TILE_MAX+60).forEach(function(k){c.delete(k)})})}
+        if(res&&res.ok&&/^image\//.test(res.headers.get('content-type')||'')){c.put(key,res.clone());c.keys().then(function(ks){if(ks.length>TILE_MAX)ks.slice(0,ks.length-TILE_MAX+60).forEach(function(k){c.delete(k)})})}
         return res;
       }catch(err){return Response.error()}
     })());
