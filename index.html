@@ -87,8 +87,19 @@ button:active{transform:scale(.95)}
 .gpsinfo b{font-weight:700}
 .gpsinfo small{display:block;color:var(--muted);font-size:.75rem}
 .gpsinfo button{min-height:32px;min-width:32px;border:0;background:transparent;color:var(--muted);font-size:1rem;cursor:pointer;border-radius:8px}
-#zgps svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+#zrule svg,#zgps svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 #zgps[aria-pressed="true"]{background:#2563eb;color:#fff}
+#zrule[aria-pressed="true"]{background:#c2410c;color:#fff}
+.app:has(#ruler:not([hidden])) #chips{display:none}
+.rulerinfo{border-left:4px solid #c2410c}
+.rulerinfo .big{font-size:1.125rem;font-weight:700;color:#9a3412}
+.rulerinfo .ab{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#c2410c;color:#fff;font-size:.75rem;font-weight:700;margin-right:6px}
+.rulerinfo .swap{margin-top:6px;border:1px solid var(--border,#d6d3cd);background:#fff;border-radius:8px;min-height:32px;padding:0 10px;font:inherit;font-size:.8125rem;cursor:pointer}
+#rule line{stroke:#c2410c;stroke-width:5;stroke-dasharray:14 10;stroke-linecap:round}
+#rule .ra circle{fill:#c2410c;stroke:#fff;stroke-width:3}
+#rule .ra text{fill:#fff;font-size:15px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+.pin.ruleA .disc,.pin.ruleB .disc{stroke:#c2410c;stroke-width:4}
+.rmk.ruleA .disc,.rmk.ruleB .disc{stroke:#c2410c;stroke-width:4}
 .meacc{fill:rgba(37,99,235,.12);stroke:rgba(37,99,235,.4);stroke-width:2}
 .mepulse{fill:rgba(37,99,235,.3);transform-box:fill-box;transform-origin:center;animation:mepulse 1.8s ease-out infinite}
 .medot{fill:#2563eb;stroke:#fff;stroke-width:4}
@@ -442,10 +453,12 @@ button.hrow{cursor:pointer}
         <div class="chips floating" id="chips" role="group" aria-label="กรองประเภทสถานที่"></div>
         <div class="topstack">
           <button class="daychip" id="daychip" type="button" hidden></button>
+          <div class="gpsinfo rulerinfo" id="ruler" role="status" hidden><div id="rultxt"></div><button type="button" id="rulx" aria-label="ปิดโหมดวัดระยะ">✕</button></div>
           <div class="gpsinfo" id="gpsinfo" role="status" hidden><div id="gpstxt"></div><button type="button" id="gpsx" aria-label="ปิดการหาตำแหน่ง">✕</button></div>
           <div class="tilewarn" id="tilewarn" role="status" hidden><span>ภาพแผนที่โหลดไม่ครบ</span><button type="button" id="tilesat">ใช้ดาวเทียม</button><button type="button" id="tilex" aria-label="ปิด">✕</button></div>
         </div>
         <div class="zoom">
+          <button type="button" id="zrule" aria-label="วัดระยะระหว่างสองจุด" aria-pressed="false"><svg viewBox="0 0 24 24"><path d="M3 17L17 3l4 4L7 21z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg></button>
           <button type="button" id="zgps" aria-label="ตำแหน่งของฉัน" aria-pressed="false" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
           <button type="button" id="zin" aria-label="ซูมเข้า">+</button>
           <button type="button" id="zout" aria-label="ซูมออก">−</button>
@@ -619,21 +632,12 @@ var P=[
 {id:'thansawan',ll:[16.883081,101.775522],llq:'user',n:'น้ำตกธารสวรรค์',s:'ธารสวรรค์',c:'water',x:1774.1,y:1555.2,lp:'b',dist:'ราว 1,390 ม. (เส้นตรง)',
   desc:'น้ำตกเล็กในป่าดิบเขา น้ำใสไหลผ่านแอ่งหิน บรรยากาศร่มเย็น',
   tip:'อยู่ใกล้น้ำตกถ้ำใหญ่ ตำแหน่งบนแผนผังเป็นค่าประมาณ'},
-{id:'thamso',ll:[16.878133,101.7434],llq:'user',n:'น้ำตกถ้ำสอเหนือ',s:'ถ้ำสอเหนือ',c:'water',x:1089.8,y:1664.6,lp:'l',dist:'ราว 4,840 ม. (เส้นตรง)',
-  desc:'น้ำตกไหลลงจากเพิงผาหินขนาดใหญ่ อยู่ทางตะวันตกของยอดภู',
-  tip:'อยู่ไกลจากที่พักกว่ากลุ่มน้ำตกอื่น ตำแหน่งบนแผนผังเป็นค่าประมาณ'},
-{id:'thamsotai',ll:[16.8731,101.7481],llq:'est',n:'น้ำตกถ้ำสอใต้',s:'ถ้ำสอใต้',c:'water',x:1189.9,y:1775.9,lp:'b',dist:'ราว 4,510 ม. (เส้นตรง)',
-  desc:'น้ำตกทางตะวันตกของยอดภู อยู่ใกล้กับถ้ำสอเหนือ',
-  tip:'พิกัดเป็นค่าประมาณตามแนวเส้นทาง ตำแหน่งบนแผนผังเป็นค่าประมาณ'},
 {id:'lanpra',ll:[16.885185,101.782159],llq:'user',n:'ลานพระศรีนครินทร์',s:'ลานพระฯ',c:'pond',x:1915.5,y:1508.6,lp:'b',dist:'640 ม.',
   desc:'ลานบนเส้นทางระหว่างศูนย์ฯ วังกวางกับกลุ่มน้ำตก มีรูปปั้นประดิษฐานอยู่ตามที่แผนที่ของอุทยานระบุ',
   tip:'เป็นจุดแยกไปเส้นทางน้ำตก'},
 {id:'reservoir',ll:[16.883922,101.788921],llq:'user',n:'อ่างเก็บน้ำไพรัตน์–ธารไชย',s:'อ่างไพรัตน์ฯ',c:'pond',x:2059.5,y:1536.6,lp:'br',dist:'350 ม.',acc:'self',hrs:'06.30–17.00 น.',
   desc:'อ่างเก็บน้ำเล็ก ๆ ใกล้ที่พัก เช้าตรู่มีหมอกลอยเหนือผิวน้ำ เดินไปชมได้ง่ายก่อนเก็บของลงเขา',
   tip:'ไปช่วง 06.30 – 07.30 น. ก่อนหมอกจาง เปิดให้เข้าชมถึง 17.00 น.'},
-{id:'anodat',ll:[16.876783,101.760162],llq:'user',n:'สระอโนดาต',c:'pond',x:1446.8,y:1694.5,lp:'b',dist:'ราว 3,160 ม. (เส้นตรง)',
-  desc:'สระน้ำนิ่งล้อมด้วยป่าสน เงาต้นสนสะท้อนผิวน้ำ ช่วงปลายหนาวมีดอกไม้ป่าบานริมสระ',
-  tip:'อยู่ทางตะวันตกของกลุ่มน้ำตก ตำแหน่งบนแผนผังเป็นค่าประมาณ'},
 {id:'wangkwang',ll:[16.886953,101.78792],llq:'user',n:'ศูนย์บริการฯ วังกวาง',s:'วังกวาง',c:'base',x:2038.2,y:1469.5,lp:'tl',dist:'จุดพักแรมบนยอดภู',
   desc:'ศูนย์กลางของยอดภู มีลานกางเต็นท์ บ้านพัก เต็นท์ให้เช่า ร้านอาหาร และจุดเช่าจักรยาน มักมีกวางป่าเดินมาใกล้ ๆ',
   tip:'เส้นทางเที่ยวทุกสายเริ่มและจบที่นี่'},
@@ -708,8 +712,8 @@ P.forEach(function(p){
   var ck=el('g',{class:'check'},b);el('circle',{cx:11,cy:-11,r:7.5},ck);el('path',{d:'M7.3 -11l2.6 2.6 4.6-5.2'},ck);
   var pos={r:[21,6,'start'],l:[-21,6,'end'],t:[0,-22,'middle'],b:[0,35,'middle'],tl:[-6,-22,'end'],bl:[-6,35,'end'],br:[6,35,'start']}[p.lp];
   el('text',{class:'lbl'+(p.out?' out':''),x:pos[0],y:pos[1],'text-anchor':pos[2]},g).textContent=p.s||p.n;
-  g.addEventListener('click',function(){select(p.id,true)});
-  g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();select(p.id,true)}});
+  g.addEventListener('click',function(){pick(p.id)});
+  g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(p.id)}});
   pinEls[p.id]=g;
 });
 
@@ -760,7 +764,7 @@ function initReal(){
     if(!p.ll)return;
     var html='<div class="rm cat-'+p.c+'"><svg viewBox="-15 -15 30 30" width="30" height="30"><circle class="disc" r="14"/>'+glyphSvg(p.c)+'</svg><span class="rl">'+(p.s||p.n)+'</span></div>';
     var m=L.marker(p.ll,{icon:L.divIcon({className:'rmk',html:html,iconSize:[30,30],iconAnchor:[15,15]}),title:p.n,keyboard:true}).addTo(lmap);
-    m.on('click',function(){select(p.id,true)});rmk[p.id]=m;
+    m.on('click',function(){pick(p.id)});rmk[p.id]=m;
   });
   /* ซำระหว่างศรีฐานถึงหลังแป: ตามพิกัด Google Maps ที่ให้มา */
   var a=byId.sithan.ll,z=byId.langpae.ll,line=[a];
@@ -770,7 +774,7 @@ function initReal(){
   });
   line.push(z);L.polyline(line,{color:'#2b7070',weight:3,dashArray:'6 8',opacity:.8,interactive:false}).addTo(lmap);
   lmap.on('zoomend',labelZoom);
-  lmap.whenReady(function(){fitReal();labelZoom();setTimeout(paintReal,0);if(me)paintMe(false)});
+  lmap.whenReady(function(){fitReal();labelZoom();setTimeout(paintReal,0);if(me)paintMe(false);paintRule()});
 }
 function setReal(on){
   realMode=on;
@@ -866,6 +870,99 @@ if(window.PK_REAL&&navigator.geolocation){
   $('zgps').addEventListener('click',function(){if(watchId===null)startGps();else if(me)centerMe();});
   $('gpsx').addEventListener('click',stopGps);
 }
+
+/* ---------- วัดระยะ: กดจุดหนึ่งแล้วกดอีกจุด ---------- */
+var rl={on:false,a:null,b:null,g:null,pl:null};
+var GR=(function(){
+  var nodes={},adj={};
+  function nid(x,y){
+    var best=null,bd=9;
+    P.forEach(function(p){var d=Math.hypot(p.x-x,p.y-y);if(d<bd){bd=d;best=p.id}});
+    return best||('xy'+Math.round(x)+','+Math.round(y));
+  }
+  Object.keys(EDGES).forEach(function(k){
+    var e=EDGES[k],n=e.d.match(/-?\d+(?:\.\d+)?/g).map(Number);
+    var len=k==='climb'?5500:(e.lbl?parseInt(e.lbl.replace(/[^\d]/g,''),10):0);
+    if(!len||n.length<4)return;
+    var a=nid(n[0],n[1]),b=nid(n[n.length-2],n[n.length-1]);
+    if(a===b)return;
+    (adj[a]=adj[a]||[]).push([b,len]);(adj[b]=adj[b]||[]).push([a,len]);
+  });
+  return adj;
+})();
+function trailPath(a,b){
+  var dist={},prev={},todo=Object.keys(GR);dist[a]=0;
+  while(todo.length){
+    var u=null;todo.forEach(function(k){if(dist[k]!==undefined&&(u===null||dist[k]<dist[u]))u=k});
+    if(u===null||u===b)break;
+    todo.splice(todo.indexOf(u),1);
+    (GR[u]||[]).forEach(function(e){var nd=dist[u]+e[1];if(dist[e[0]]===undefined||nd<dist[e[0]]){dist[e[0]]=nd;prev[e[0]]=u}});
+  }
+  if(dist[b]===undefined)return null;
+  var path=[b];while(path[0]!==a)path.unshift(prev[path[0]]);
+  return {m:dist[b],path:path};
+}
+function fmtT(m){return m>=1000?(m/1000).toFixed(2).replace(/0$/,'')+' กม.':Math.round(m)+' ม.'}
+function ruleClear(){
+  if(rl.g){rl.g.parentNode.removeChild(rl.g);rl.g=null}
+  if(lmap&&rl.pl){lmap.removeLayer(rl.pl);rl.pl=null}
+  P.forEach(function(p){
+    pinEls[p.id].classList.remove('ruleA','ruleB');
+    var m=rmk[p.id],e=m&&m.getElement();if(e)e.classList.remove('ruleA','ruleB');
+  });
+}
+function paintRule(){
+  ruleClear();
+  if(!rl.on||!rl.a)return;
+  [[rl.a,'ruleA'],[rl.b,'ruleB']].forEach(function(t){
+    if(!t[0])return;pinEls[t[0]].classList.add(t[1]);
+    var m=rmk[t[0]],e=m&&m.getElement();if(e)e.classList.add(t[1]);
+  });
+  if(!rl.b)return;
+  var A=byId[rl.a],B=byId[rl.b];
+  rl.g=el('g',{id:'rule'});svg.insertBefore(rl.g,pins);
+  el('line',{x1:A.x,y1:A.y,x2:B.x,y2:B.y},rl.g);
+  if(lmap&&A.ll&&B.ll)rl.pl=L.polyline([A.ll,B.ll],{color:'#c2410c',weight:4,dashArray:'8 8',interactive:false}).addTo(lmap);
+}
+function ruleText(){
+  var box=$('rultxt');box.innerHTML='';
+  if(!rl.a){box.appendChild(h('b',null,'วัดระยะ'));box.appendChild(h('div',null,'แตะจุดแรก แล้วแตะอีกจุดหนึ่ง'));return}
+  var A=byId[rl.a];
+  if(!rl.b){var l=h('div');l.appendChild(h('span','ab','A'));l.appendChild(document.createTextNode(A.n));box.appendChild(l);box.appendChild(h('div',null,'ตอนนี้แตะอีกจุดเพื่อดูระยะทาง'));return}
+  var B=byId[rl.b],tp=trailPath(rl.a,rl.b),line=h('div');
+  line.appendChild(h('span','ab','A'));line.appendChild(document.createTextNode(A.n+' '));
+  line.appendChild(h('span','ab','B'));line.appendChild(document.createTextNode(B.n));box.appendChild(line);
+  if(tp){
+    box.appendChild(h('div','big','ตามทางเดิน ราว '+fmtT(tp.m)));
+    var names=tp.path.filter(function(k){return byId[k]}).map(function(k){return byId[k].s||byId[k].n});
+    if(names.length>2)box.appendChild(h('small',null,'ผ่าน: '+names.slice(1,-1).join(' → ')+' · ตามป้ายอุทยาน'));
+    
+  }
+  if(A.ll&&B.ll)box.appendChild(h('div',tp?null:'big','เส้นตรงบนแผนที่ ราว '+fmtD(hav(A.ll,B.ll))));
+  if(!tp)box.appendChild(h('small',null,'ไม่มีตัวเลขระยะตามทางเดินของคู่นี้ในแผนที่อุทยาน'));
+  var sw=h('button','swap','สลับ A ↔ B');sw.type='button';
+  sw.addEventListener('click',function(){var t=rl.a;rl.a=rl.b;rl.b=t;ruleText();paintRule()});
+  box.appendChild(sw);
+}
+function rulePick(id){
+  if(!rl.a||rl.b){rl.a=id;rl.b=null}
+  else if(id===rl.a){rl.a=null}
+  else rl.b=id;
+  ruleText();paintRule();
+  if(rl.b&&!realMode){var A=byId[rl.a],B=byId[rl.b];measure();
+    var dx=Math.abs(A.x-B.x)*1.35+360,dy=Math.abs(A.y-B.y)*1.9+300,z=Math.min(14,Math.max(1,Math.min(baseW()/dx,baseW()*ch/cw/dy)));
+    var bh=baseW()/z*ch/cw;flyTo((A.x+B.x)/2,(A.y+B.y)/2-bh*.16,z)}
+  else if(rl.b&&lmap&&byId[rl.a].ll&&byId[rl.b].ll)lmap.fitBounds(L.latLngBounds([byId[rl.a].ll,byId[rl.b].ll]),{padding:[60,60]});
+}
+function pick(id){if(rl.on)rulePick(id);else select(id,true)}
+function setRule(on){
+  rl.on=on;rl.a=null;rl.b=null;
+  $('zrule').setAttribute('aria-pressed',on);$('ruler').hidden=!on;
+  if(on){ruleText();setSheet(0)}
+  paintRule();
+}
+$('zrule').addEventListener('click',function(){setRule(!rl.on)});
+$('rulx').addEventListener('click',function(){setRule(false)});
 var dcq=0;
 function queueDeclutter(){if(!dcq)dcq=requestAnimationFrame(function(){dcq=0;declutter()})}
 /* ซ่อนป้ายชื่อที่ซ้อนกัน: เลือกก่อน > จุดของวันที่เลือก > จุดอื่น > ชื่อซำ (ตัวเลขระยะทางแสดงเสมอ) */
@@ -968,7 +1065,7 @@ Object.keys(CATS).forEach(function(k){
 });
 P.forEach(function(p){
   var b=h('button','place',p.n);b.type='button';b.id='place-'+p.id;
-  b.addEventListener('click',function(){select(p.id,true);if(cw<600||window.innerWidth<900)toggleList(false)});
+  b.addEventListener('click',function(){if(rl.on){rulePick(p.id);if(cw<600||window.innerWidth<900)toggleList(false);return}select(p.id,true);if(cw<600||window.innerWidth<900)toggleList(false)});
   groups[p.c].querySelector('.items').appendChild(b);placeEls[p.id]=b;
 });
 function toggleList(open){
@@ -1002,10 +1099,10 @@ var ART={
  nokaen:{t:'cliff',sky:'sunrise',cloud:1,rose:1,pine:[25]},
  'wk-fall':{t:'fall',w:26,tiers:1}, penphopmai:{t:'fall',w:92,tiers:1,maple:1}, phonphop:{t:'fall',w:38,tiers:3},
  penphop:{t:'fall',w:72,tiers:1,curve:1}, thamyai:{t:'fall',w:30,tiers:2,maple:2}, thansawan:{t:'fall',w:22,tiers:2},
- thamso:{t:'fall',w:36,tiers:1,cave:1}, khunphong:{t:'fall',w:18,tiers:1,tall:1},
- anodat:{t:'pond',pines:[20,48,92,228,268,300]}, sakaeo:{t:'pond',rock:1,small:1,pines:[40,280]},
+ khunphong:{t:'fall',w:18,tiers:1,tall:1},
+ sakaeo:{t:'pond',rock:1,small:1,pines:[40,280]},
  reservoir:{t:'pond',mist:1,wide:1,pines:[18,44,296]},
- thamsotai:{t:'fall',w:30,tiers:1}, lanpra:{t:'lan'}, maysa:{t:'cliff',sky:'day',pine:[30,90]}, wangkwang:{t:'camp'}, langpae:{t:'sign'}, sithan:{t:'foot'}
+ lanpra:{t:'lan'}, maysa:{t:'cliff',sky:'day',pine:[30,90]}, wangkwang:{t:'camp'}, langpae:{t:'sign'}, sithan:{t:'foot'}
 };
 function pine(x,y,s,c){return '<g transform="translate('+x+' '+y+') scale('+s+')"><rect x="-1.3" y="-32" width="2.6" height="32" fill="#6b4f3a"/><path d="M0 -56L9 -42H5L12 -30H-12L-5 -42H-9Z" fill="'+(c||'#3f6b4a')+'"/></g>'}
 function rnd(seed){var s=seed;return function(){s=(s*9301+49297)%233280;return s/233280}}
@@ -1083,7 +1180,7 @@ function art(id){
   }
   return o;
 }
-var PHOTO={"makduk": {"by": "SUPAPORN KHUMTHONGIN", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:*%E0%B9%81%E0%B8%AA%E0%B8%87%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%9C%E0%B8%B2%E0%B8%AB%E0%B8%A1%E0%B8%B2%E0%B8%81%E0%B8%94%E0%B8%B9%E0%B8%81.JPG"}, "phonphop": {"by": "Mmonthon", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:8th_place_-_Phon_Phop_Waterfall_on_Phu_Kradueng_National_Park,_Thailand.JPG"}, "langpae": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Lang_Pae_(I).jpg"}, "thamyai": {"by": "Nicetory", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Maple_leaves_and_the_Big_Cave_Waterfall,_Phu_Kradueng.jpg"}, "nanoi": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Na_Noi_Cliff_(I).jpg"}, "penphopmai": {"by": "Nicetory", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Penphopmai_Waterfall.jpg"}, "lomsak": {"by": "Billybobmac", "lic": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Pha_Lom_Sak.jpg"}, "nokaen": {"by": "Yothind", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Sun_rise_at_Nok_Aen_Cliff-1_,Phu_Kradueng_National_Park.jpg"}, "yiapmek": {"by": "Sorrasan", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Yeab_Mek_cliff.jpg"}, "wangkwang": {"by": "Anawit1", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:%E0%B8%88%E0%B8%B8%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%95%E0%B9%89%E0%B8%99%E0%B8%97%E0%B9%8C%E0%B8%AD%E0%B8%B8%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4%E0%B8%A0%E0%B8%B9%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B6%E0%B8%87.jpg"}, "anodat": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Anodard_Pond_(I).jpg"}, "wk-fall": {"by": "Orataikon", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%95%E0%B8%81%E0%B8%A7%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B8%A7%E0%B8%B2%E0%B8%87.JPG"}};
+var PHOTO={"makduk": {"by": "SUPAPORN KHUMTHONGIN", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:*%E0%B9%81%E0%B8%AA%E0%B8%87%E0%B8%AA%E0%B8%B8%E0%B8%94%E0%B8%97%E0%B9%89%E0%B8%B2%E0%B8%A2%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B8%9C%E0%B8%B2%E0%B8%AB%E0%B8%A1%E0%B8%B2%E0%B8%81%E0%B8%94%E0%B8%B9%E0%B8%81.JPG"}, "phonphop": {"by": "Mmonthon", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:8th_place_-_Phon_Phop_Waterfall_on_Phu_Kradueng_National_Park,_Thailand.JPG"}, "langpae": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Lang_Pae_(I).jpg"}, "thamyai": {"by": "Nicetory", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Maple_leaves_and_the_Big_Cave_Waterfall,_Phu_Kradueng.jpg"}, "nanoi": {"by": "Supanut Arunoprayote", "lic": "CC BY 4.0", "page": "https://commons.wikimedia.org/wiki/File:Na_Noi_Cliff_(I).jpg"}, "penphopmai": {"by": "Nicetory", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Penphopmai_Waterfall.jpg"}, "lomsak": {"by": "Billybobmac", "lic": "Public domain", "page": "https://commons.wikimedia.org/wiki/File:Pha_Lom_Sak.jpg"}, "nokaen": {"by": "Yothind", "lic": "CC BY-SA 4.0", "page": "https://commons.wikimedia.org/wiki/File:Sun_rise_at_Nok_Aen_Cliff-1_,Phu_Kradueng_National_Park.jpg"}, "yiapmek": {"by": "Sorrasan", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:Yeab_Mek_cliff.jpg"}, "wangkwang": {"by": "Anawit1", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:%E0%B8%88%E0%B8%B8%E0%B8%94%E0%B8%81%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%95%E0%B9%89%E0%B8%99%E0%B8%97%E0%B9%8C%E0%B8%AD%E0%B8%B8%E0%B8%97%E0%B8%A2%E0%B8%B2%E0%B8%99%E0%B9%81%E0%B8%AB%E0%B9%88%E0%B8%87%E0%B8%8A%E0%B8%B2%E0%B8%95%E0%B8%B4%E0%B8%A0%E0%B8%B9%E0%B8%81%E0%B8%A3%E0%B8%B0%E0%B8%94%E0%B8%B6%E0%B8%87.jpg"}, "wk-fall": {"by": "Orataikon", "lic": "CC BY-SA 3.0", "page": "https://commons.wikimedia.org/wiki/File:%E0%B8%99%E0%B9%89%E0%B8%B3%E0%B8%95%E0%B8%81%E0%B8%A7%E0%B8%B1%E0%B8%87%E0%B8%81%E0%B8%A7%E0%B8%B2%E0%B8%87.JPG"}};
 var visited={};try{visited=JSON.parse(localStorage.getItem('pk-visited')||'{}')||{}}catch(e){}
 function nDone(){return P.filter(function(p){return visited[p.id]}).length}
 function paintDone(){
