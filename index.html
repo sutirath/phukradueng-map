@@ -79,7 +79,22 @@ button:active{transform:scale(.95)}
 .mapseg button[aria-pressed="true"]{background:var(--primary-deep);color:#fff}
 .chips.floating,.zoom,.daychip,.minibar{z-index:5}
 .leaflet-top.leaflet-right{margin-top:58px}
-.tilewarn{position:absolute;top:58px;left:var(--gl);right:76px;z-index:6;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 14px;border-radius:12px;background:#fef3c7;color:#78350f;box-shadow:var(--shadow-lg);font-weight:500}
+.tilewarn{position:static;z-index:6;display:flex;align-items:center;gap:8px;padding:6px 8px 6px 14px;border-radius:12px;background:#fef3c7;color:#78350f;box-shadow:var(--shadow-lg);font-weight:500}
+.topstack{position:absolute;top:58px;left:var(--gl);right:76px;z-index:6;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.topstack>*{pointer-events:auto}
+.gpsinfo{display:flex;align-items:flex-start;gap:8px;padding:10px 8px 10px 14px;border-radius:12px;background:#fff;box-shadow:var(--shadow-lg);color:var(--ink);font-size:.875rem;line-height:1.45}
+.gpsinfo>div{flex:1;min-width:0}
+.gpsinfo b{font-weight:700}
+.gpsinfo small{display:block;color:var(--muted);font-size:.75rem}
+.gpsinfo button{min-height:32px;min-width:32px;border:0;background:transparent;color:var(--muted);font-size:1rem;cursor:pointer;border-radius:8px}
+#zgps svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+#zgps[aria-pressed="true"]{background:#2563eb;color:#fff}
+.meacc{fill:rgba(37,99,235,.12);stroke:rgba(37,99,235,.4);stroke-width:2}
+.mepulse{fill:rgba(37,99,235,.3);transform-box:fill-box;transform-origin:center;animation:mepulse 1.8s ease-out infinite}
+.medot{fill:#2563eb;stroke:#fff;stroke-width:4}
+@keyframes mepulse{from{transform:scale(.5);opacity:1}to{transform:scale(2.4);opacity:0}}
+.meL i{display:block;width:18px;height:18px;border-radius:50%;background:#2563eb;border:3px solid #fff;box-shadow:0 0 0 7px rgba(37,99,235,.25)}
+@media (prefers-reduced-motion:reduce){.mepulse{animation:none}}
 .tilewarn span{flex:1;min-width:0}
 .tilewarn button{min-height:36px;border:0;border-radius:8px;background:#fff;color:var(--ink);font-weight:600;padding:0 10px;cursor:pointer}
 .tilewarn #tilex{padding:0 8px;background:transparent}
@@ -100,7 +115,7 @@ button:active{transform:scale(.95)}
 .rm.done .disc{fill:#e5e7eb}.rm.done .glyph{fill:var(--body-text)}
 .chips.floating{position:absolute;top:10px;left:0;right:0;padding:2px var(--gr) 6px var(--gl)}
 .chips.floating .chip{box-shadow:var(--shadow-md)}
-.daychip{position:absolute;left:var(--gl);top:60px;min-height:36px;padding:0 14px;border:0;border-radius:9999px;background:var(--primary-deep);color:#fff;font-weight:600;cursor:pointer;box-shadow:var(--shadow-lg)}
+.daychip{position:static;align-self:flex-start;min-height:36px;padding:0 14px;border:0;border-radius:9999px;background:var(--primary-deep);color:#fff;font-weight:600;cursor:pointer;box-shadow:var(--shadow-lg)}
 .hourscard{background:var(--surface-subtle);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
 .hourscard h3{font-size:1rem;font-weight:700}
 .hgroup{display:flex;flex-direction:column}
@@ -420,14 +435,18 @@ button.hrow{cursor:pointer}
           <text class="maptxt" x="1810" y="2706" text-anchor="middle">แผนผังตามพิกัดจริง รูปทรงภูตามภาพภูมิประเทศ ไม่ตรงมาตราส่วนของไหล่เขา</text>
         </svg>
         <div id="realmap" hidden></div>
-        <div class="tilewarn" id="tilewarn" role="status" hidden><span>ภาพแผนที่โหลดไม่ครบ</span><button type="button" id="tilesat">ใช้ดาวเทียม</button><button type="button" id="tilex" aria-label="ปิด">✕</button></div>
         <div class="mapseg" id="mapseg" role="group" aria-label="ชนิดแผนที่" hidden>
           <button type="button" id="seg-plan" aria-pressed="true">แผนผัง</button>
           <button type="button" id="seg-real" aria-pressed="false">แผนที่จริง</button>
         </div>
         <div class="chips floating" id="chips" role="group" aria-label="กรองประเภทสถานที่"></div>
-        <button class="daychip" id="daychip" type="button" hidden></button>
+        <div class="topstack">
+          <button class="daychip" id="daychip" type="button" hidden></button>
+          <div class="gpsinfo" id="gpsinfo" role="status" hidden><div id="gpstxt"></div><button type="button" id="gpsx" aria-label="ปิดการหาตำแหน่ง">✕</button></div>
+          <div class="tilewarn" id="tilewarn" role="status" hidden><span>ภาพแผนที่โหลดไม่ครบ</span><button type="button" id="tilesat">ใช้ดาวเทียม</button><button type="button" id="tilex" aria-label="ปิด">✕</button></div>
+        </div>
         <div class="zoom">
+          <button type="button" id="zgps" aria-label="ตำแหน่งของฉัน" aria-pressed="false" hidden><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/></svg></button>
           <button type="button" id="zin" aria-label="ซูมเข้า">+</button>
           <button type="button" id="zout" aria-label="ซูมออก">−</button>
           <button type="button" id="zfit" aria-label="ดูทั้งภู"><svg viewBox="0 0 24 24"><path d="M3 18l6-9 4 5 3-4 5 8z"/></svg></button>
@@ -751,7 +770,7 @@ function initReal(){
   });
   line.push(z);L.polyline(line,{color:'#2b7070',weight:3,dashArray:'6 8',opacity:.8,interactive:false}).addTo(lmap);
   lmap.on('zoomend',labelZoom);
-  lmap.whenReady(function(){fitReal();labelZoom();setTimeout(paintReal,0)});
+  lmap.whenReady(function(){fitReal();labelZoom();setTimeout(paintReal,0);if(me)paintMe(false)});
 }
 function setReal(on){
   realMode=on;
@@ -760,6 +779,93 @@ function setReal(on){
   if(on){initReal();if(lmap){lmap.invalidateSize();setTimeout(paintReal,0)}}
 }
 if(window.PK_REAL&&window.L){$('mapseg').hidden=false;$('seg-plan').addEventListener('click',function(){setReal(false)});$('seg-real').addEventListener('click',function(){setReal(true)})}
+/* ---------- GPS: ตำแหน่งของฉัน ---------- */
+var me=null,watchId=null,meGroup=null,meL=null,meLacc=null;
+function hav(a,b){var R=6371000,p1=a[0]*Math.PI/180,p2=b[0]*Math.PI/180,dp=p2-p1,dl=(b[1]-a[1])*Math.PI/180,x=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2);return 2*R*Math.asin(Math.sqrt(x))}
+function fmtD(m){return m>=1000?(m/1000).toFixed(1)+' กม.':Math.round(m/10)*10+' ม.'}
+var GFIT=(function(){
+  var a=byId.lomsak,b=byId.sithan,c=byId.penphopmai,d=byId.daeng;
+  var sx=(b.x-a.x)/(b.ll[1]-a.ll[1]),sy=(d.y-c.y)/(d.ll[0]-c.ll[0]);
+  return {x:function(lon){return a.x+(lon-a.ll[1])*sx},y:function(lat){return c.y+(lat-c.ll[0])*sy},k:Math.abs(sx)/106520}; // k = หน่วยแผนผังต่อเมตร
+})();
+var CLIMB=[{n:'ศรีฐาน',ll:byId.sithan.ll}].concat(SAMS.map(function(s){return {n:s.n,ll:s.ll}})).concat([{n:'หลังแป',ll:byId.langpae.ll}]);
+function projClimb(ll){
+  var best=null,along=0,cosf=Math.cos(ll[0]*Math.PI/180);
+  function xy(p){return [(p[1]-ll[1])*111320*cosf,(p[0]-ll[0])*110574]}
+  for(var i=0;i<CLIMB.length-1;i++){
+    var A=xy(CLIMB[i].ll),B=xy(CLIMB[i+1].ll),dx=B[0]-A[0],dy=B[1]-A[1],L2=dx*dx+dy*dy||1,t=Math.max(0,Math.min(1,-(A[0]*dx+A[1]*dy)/L2)),px=A[0]+t*dx,py=A[1]+t*dy,d=Math.hypot(px,py),len=Math.sqrt(L2);
+    if(!best||d<best.d)best={d:d,i:i,t:t,len:len,along:along+t*len};
+    along+=len;
+  }
+  best.total=along;return best;
+}
+function gpsText(){
+  var box=$('gpstxt');box.innerHTML='';if(!me)return;
+  var ll=[me.lat,me.lon],near=null,all=P.filter(function(p){return p.ll}).map(function(p){return {n:p.n,ll:p.ll}}).concat(SAMS.map(function(s){return {n:s.n,ll:s.ll}}));
+  all.forEach(function(p){var d=hav(ll,p.ll);if(!near||d<near.d)near={n:p.n,d:d}});
+  var line=h('div');
+  if(near.d>20000){line.appendChild(h('b',null,'คุณอยู่ห่างจากภูกระดึงราว '+Math.round(near.d/1000)+' กม.'));box.appendChild(line);return}
+  var pc=projClimb(ll);
+  if(pc.d<350){
+    var prev=CLIMB[pc.i],next=CLIMB[pc.i+1],rem=(1-pc.t)*pc.len,pct=Math.round(pc.along/pc.total*100);
+    line.appendChild(h('b',null,'🥾 บนทางขึ้นภู: ผ่าน'+(pc.t>.85?next.n:prev.n)+'แล้ว'));
+    box.appendChild(line);
+    var atTop=pc.t>.85&&pc.i+1===CLIMB.length-1,nx=pc.t>.85?CLIMB[pc.i+2]:next;
+    var l2=h('div',null,atTop?'ถึงหลังแปแล้ว (สุดทางขึ้น)':'ถัดไป '+nx.n+' อีกราว '+fmtD(pc.t>.85?hav(ll,nx.ll):rem)+' · ขึ้นมาประมาณ '+pct+'% ของทางขึ้น');
+    box.appendChild(l2);
+  }else{
+    line.appendChild(h('b',null,'📍 ใกล้'+near.n+' ราว '+fmtD(near.d)));box.appendChild(line);
+    if(near.n.indexOf('วังกวาง')<0)box.appendChild(h('div',null,'ห่างศูนย์ฯ วังกวางราว '+fmtD(hav(ll,byId.wangkwang.ll))));
+  }
+  box.appendChild(h('small',null,'แม่นยำ ±'+Math.round(me.acc)+' ม. · ระยะเป็นเส้นตรง ไม่ใช่ตามทางเดิน'));
+}
+function paintMe(first){
+  if(!me)return;
+  var far=hav([me.lat,me.lon],byId.wangkwang.ll)>20000;
+  if(meGroup){meGroup.parentNode.removeChild(meGroup);meGroup=null}
+  if(!far){
+    var x=GFIT.x(me.lon),y=GFIT.y(me.lat),r=Math.max(16,Math.min(400,me.acc*GFIT.k));
+    meGroup=el('g',{id:'me',transform:'translate('+x.toFixed(1)+' '+y.toFixed(1)+')'},svg);
+    el('circle',{class:'meacc',r:r},meGroup);el('circle',{class:'mepulse',r:16},meGroup);el('circle',{class:'medot',r:10},meGroup);
+    if(lmap){
+      if(!meL){meL=L.marker([me.lat,me.lon],{icon:L.divIcon({className:'rmk meL',html:'<i></i>',iconSize:[18,18],iconAnchor:[9,9]}),interactive:false,keyboard:false,zIndexOffset:2000}).addTo(lmap);meLacc=L.circle([me.lat,me.lon],{radius:me.acc,color:'#2563eb',weight:1,fillOpacity:.1,interactive:false}).addTo(lmap)}
+      else{meL.setLatLng([me.lat,me.lon]);meLacc.setLatLng([me.lat,me.lon]).setRadius(me.acc)}
+    }
+    if(first)centerMe();
+  }
+  gpsText();
+}
+function centerMe(){
+  if(!me||hav([me.lat,me.lon],byId.wangkwang.ll)>20000)return;
+  if(realMode&&lmap)lmap.setView([me.lat,me.lon],Math.max(lmap.getZoom(),15),{animate:true});
+  else{measure();flyTo(GFIT.x(me.lon),GFIT.y(me.lat),Math.max(view.z,homeZ()))}
+}
+function stopGps(){
+  if(watchId!==null)navigator.geolocation.clearWatch(watchId);watchId=null;me=null;
+  if(meGroup){meGroup.parentNode.removeChild(meGroup);meGroup=null}
+  if(lmap&&meL){lmap.removeLayer(meL);lmap.removeLayer(meLacc);meL=null;meLacc=null}
+  $('gpsinfo').hidden=true;$('zgps').setAttribute('aria-pressed','false');
+}
+function gpsMsg(t){$('gpstxt').innerHTML='';$('gpstxt').appendChild(h('div',null,t));$('gpsinfo').hidden=false}
+function startGps(){
+  if(!navigator.geolocation){gpsMsg('เครื่องนี้ไม่รองรับการหาตำแหน่ง');return}
+  $('zgps').setAttribute('aria-pressed','true');gpsMsg('กำลังหาตำแหน่ง…');
+  var firstFix=true;
+  watchId=navigator.geolocation.watchPosition(function(pos){
+    me={lat:pos.coords.latitude,lon:pos.coords.longitude,acc:pos.coords.accuracy||50};
+    $('gpsinfo').hidden=false;paintMe(firstFix);firstFix=false;
+    if(selected&&$('detail').firstChild)select(selected,false,true);
+  },function(err){
+    if(err.code===1){stopGps();gpsMsg('ไม่ได้รับอนุญาตให้ใช้ตำแหน่ง เปิดสิทธิ์ตำแหน่งให้เบราว์เซอร์หรือแอปนี้ในการตั้งค่า แล้วลองใหม่')}
+    else if(err.code===2)gpsMsg('หาตำแหน่งไม่ได้ ลองออกไปที่โล่งหรือเปิด GPS ของเครื่อง');
+    else gpsMsg('กำลังหาตำแหน่งอยู่ รอสักครู่…');
+  },{enableHighAccuracy:true,maximumAge:5000,timeout:25000});
+}
+if(window.PK_REAL&&navigator.geolocation){
+  $('zgps').hidden=false;
+  $('zgps').addEventListener('click',function(){if(watchId===null)startGps();else if(me)centerMe();});
+  $('gpsx').addEventListener('click',stopGps);
+}
 var dcq=0;
 function queueDeclutter(){if(!dcq)dcq=requestAnimationFrame(function(){dcq=0;declutter()})}
 /* ซ่อนป้ายชื่อที่ซ้อนกัน: เลือกก่อน > จุดของวันที่เลือก > จุดอื่น > ชื่อซำ (ตัวเลขระยะทางแสดงเสมอ) */
@@ -1030,6 +1136,7 @@ function select(id,center,keep){
   if(p.acc)tags.appendChild(h('span','tag '+p.acc,p.acc==='guide'?'ต้องมีเจ้าหน้าที่นำทาง':'เข้าชมได้เอง'));
   tags.appendChild(h('span','dist',/ม\./.test(p.dist)?'📍 ห่างจากวังกวาง '+p.dist.replace('~','ประมาณ '):'📍 '+p.dist));
   if(p.seg)tags.appendChild(h('span','dist','↔ '+p.seg));
+  if(me&&p.ll&&hav([me.lat,me.lon],p.ll)<20000)tags.appendChild(h('span','dist','🧭 ห่างจากคุณราว '+fmtD(hav([me.lat,me.lon],p.ll))));
   if(p.hrs)tags.appendChild(h('span','dist','🕐 '+p.hrs));
   var tp=h('p','tip');tp.appendChild(document.createTextNode('💡 '));tp.appendChild(document.createTextNode(p.tip));
   var fig=h('figure','figure');
