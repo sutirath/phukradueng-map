@@ -27,7 +27,7 @@
   --danger:#ef4444; --active:#f97316; --amber:#f59e0b;
   --ink:#111827; --body-text:#374151; --muted:#6b7280; --border:#d1d5db;
   --surface:#ffffff; --surface-subtle:#f9fafb; --page:#f8fafc;
-  --m-nature:#a5631a; --m-water:#1f77a3; --m-sights:#7453a3; --m-transport:#2c5a43;
+  --m-nature:#a5631a; --m-water:#1f77a3; --m-sights:#7453a3; --m-transport:#2c5a43; --m-food:#b4443a;
   --plateau:#e1ecd6; --forest:#c9dcbf; --rock:#d8c29d; --rock-deep:#b0976c; --mapbg:#eef4f3;
   --shadow-xs:0 1px 2px rgba(0,0,0,.08);
   --shadow-md:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06);
@@ -255,7 +255,7 @@ button.hrow{cursor:pointer}
 .pin.dim{opacity:.25}
 .far .pin:not(.sel) .lbl{display:none}
 .cat-cliff .disc{fill:var(--m-nature)} .cat-water .disc{fill:var(--m-water)}
-.cat-pond .disc{fill:var(--m-sights)} .cat-base .disc{fill:var(--m-transport)}
+.cat-pond .disc{fill:var(--m-sights)} .cat-base .disc{fill:var(--m-transport)} .cat-food .disc{fill:var(--m-food)}
 
 /* plan + prep views */
 .page{max-width:820px;margin:0 auto;padding:16px var(--gr) 28px var(--gl);display:flex;flex-direction:column;gap:16px}
@@ -587,7 +587,8 @@ var CATS={
   cliff:{name:'หน้าผา',color:'var(--m-nature)'},
   water:{name:'น้ำตก',color:'var(--m-water)'},
   pond:{name:'อ่างน้ำและลาน',color:'var(--m-sights)'},
-  base:{name:'จุดบริการ',color:'var(--m-transport)'}
+  base:{name:'จุดบริการ',color:'var(--m-transport)'},
+  food:{name:'ร้านอาหาร',color:'var(--m-food)'}
 };
 var P=[
 {id:'lomsak',ll:[16.859722,101.726667],llq:'user',n:'ผาหล่มสัก',c:'cliff',x:733.3,y:2071.9,lp:'l',out:1,dist:'~9,360 ม.',seg:'จากผาแดง 2,420 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น. อยู่ได้ไม่เกิน 18.00 น.',
@@ -632,6 +633,24 @@ var P=[
 {id:'thansawan',ll:[16.883081,101.775522],llq:'user',n:'น้ำตกธารสวรรค์',s:'ธารสวรรค์',c:'water',x:1774.1,y:1555.2,lp:'b',dist:'ราว 1,390 ม. (เส้นตรง)',
   desc:'น้ำตกเล็กในป่าดิบเขา น้ำใสไหลผ่านแอ่งหิน บรรยากาศร่มเย็น',
   tip:'อยู่ใกล้น้ำตกถ้ำใหญ่ ตำแหน่งบนแผนผังเป็นค่าประมาณ'},
+{id:'f1',ll:[16.860622,101.727479],llq:'user',n:'ร้านครัวคุณไผ่ผาหล่มสัก',s:'ครัวคุณไผ่',c:'food',x:742.7,y:2042.5,lp:'l',dist:'ราว 7,070 ม. (เส้นตรง)',seg:'อยู่แถวผาหล่มสัก',
+  desc:'ร้านอาหารบริเวณผาหล่มสัก',
+  tip:'ยังไม่มีข้อมูลเมนูและเวลาเปิด–ปิด ควรสอบถามหน้าร้าน ตำแหน่งบนแผนผังขยับห่างจากจุดอื่นเล็กน้อยเพื่อให้กดง่าย'},
+{id:'f2',ll:[16.860374,101.727834],llq:'user',n:'ร้านกาแฟชมวิว',s:'กาแฟชมวิว',c:'food',x:764.7,y:2062.9,lp:'r',dist:'ราว 7,040 ม. (เส้นตรง)',seg:'อยู่แถวผาหล่มสัก',
+  desc:'ร้านอาหารบริเวณผาหล่มสัก',
+  tip:'ยังไม่มีข้อมูลเมนูและเวลาเปิด–ปิด ควรสอบถามหน้าร้าน ตำแหน่งบนแผนผังขยับห่างจากจุดอื่นเล็กน้อยเพื่อให้กดง่าย'},
+{id:'f3',ll:[16.858156,101.74818],llq:'user',n:'ร้านสายหมอก',s:'สายหมอก',c:'food',x:1190.1,y:2088.9,lp:'b',dist:'ราว 5,300 ม. (เส้นตรง)',seg:'อยู่แถวผาแดง',
+  desc:'ร้านอาหารบริเวณผาแดง',
+  tip:'ยังไม่มีข้อมูลเมนูและเวลาเปิด–ปิด ควรสอบถามหน้าร้าน ตำแหน่งบนแผนผังขยับห่างจากจุดอื่นเล็กน้อยเพื่อให้กดง่าย'},
+{id:'f4',ll:[16.864733,101.779053],llq:'user',n:'ร้านลูกสน',s:'ลูกสน',c:'food',x:1852.9,y:1942.5,lp:'b',dist:'ราว 2,640 ม. (เส้นตรง)',seg:'อยู่แถวผานาน้อย',
+  desc:'ร้านอาหารบริเวณผานาน้อย',
+  tip:'ยังไม่มีข้อมูลเมนูและเวลาเปิด–ปิด ควรสอบถามหน้าร้าน ตำแหน่งบนแผนผังขยับห่างจากจุดอื่นเล็กน้อยเพื่อให้กดง่าย'},
+{id:'f5',ll:[16.865804,101.790012],llq:'user',n:'ร้านเหินฟ้า ภูกระดึง',s:'เหินฟ้า',c:'food',x:2079.9,y:1919.2,lp:'b',dist:'ราว 2,360 ม. (เส้นตรง)',seg:'อยู่แถวผาหมากดูก',
+  desc:'ร้านอาหารบริเวณผาหมากดูก',
+  tip:'ยังไม่มีข้อมูลเมนูและเวลาเปิด–ปิด ควรสอบถามหน้าร้าน ตำแหน่งบนแผนผังขยับห่างจากจุดอื่นเล็กน้อยเพื่อให้กดง่าย'},
+{id:'f6',ll:[16.865674,101.790422],llq:'user',n:'ร้านลมหนาว',s:'ลมหนาว',c:'food',x:2105.1,y:1939.6,lp:'r',dist:'ราว 2,380 ม. (เส้นตรง)',seg:'อยู่แถวผาหมากดูก',
+  desc:'ร้านอาหารบริเวณผาหมากดูก',
+  tip:'ยังไม่มีข้อมูลเมนูและเวลาเปิด–ปิด ควรสอบถามหน้าร้าน ตำแหน่งบนแผนผังขยับห่างจากจุดอื่นเล็กน้อยเพื่อให้กดง่าย'},
 {id:'lanpra',ll:[16.885185,101.782159],llq:'user',n:'ลานพระศรีนครินทร์',s:'ลานพระฯ',c:'pond',x:1915.5,y:1508.6,lp:'b',dist:'640 ม.',
   desc:'ลานบนเส้นทางระหว่างศูนย์ฯ วังกวางกับกลุ่มน้ำตก มีรูปปั้นประดิษฐานอยู่ตามที่แผนที่ของอุทยานระบุ',
   tip:'เป็นจุดแยกไปเส้นทางน้ำตก'},
@@ -654,6 +673,7 @@ function h(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cl
 var NS='http://www.w3.org/2000/svg';
 function el(tag,attrs,parent){var e=document.createElementNS(NS,tag);for(var k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
 var GLYPH={
+  food:'M-7 -1H7C7 4 3.5 7 0 7S-7 4 -7 -1ZM-2 -6C-3 -4.5 -1 -3.5 -2 -2M2 -6C1 -4.5 3 -3.5 2 -2',
   cliff:'M-7.5 5.5L-1.5 -6L1.5 -1.5L3.5 -4.5L8 5.5Z',
   water:'M0 -7.5C4 -2.5 6 0.5 6 3A6 6 0 0 1 -6 3C-6 0.5 -4 -2.5 0 -7.5Z',
   base:'M-6.5 6V-1L0 -7L6.5 -1V6Z'
@@ -705,12 +725,15 @@ P.forEach(function(p){
   var g=el('g',{class:'pin cat-'+p.c,transform:'translate('+p.x+' '+p.y+')',tabindex:0,role:'button','aria-label':p.n},pins);
   el('circle',{r:26,fill:'transparent'},g);
   var b=el('g',{class:'body'},g);
-  el('circle',{class:'disc',r:14},b);
-  if(p.c==='pond') el('ellipse',{class:'glyph ln',rx:6.5,ry:4.2},b);
+  var fd=p.c==='food';
+  el('circle',{class:'disc',r:fd?10:14},b);
+  if(fd)el('path',{class:'glyph',d:GLYPH.food,transform:'scale(.72)'},b);
+  else if(p.c==='pond') el('ellipse',{class:'glyph ln',rx:6.5,ry:4.2},b);
   else el('path',{class:'glyph',d:GLYPH[p.c]},b);
   if(p.acc==='guide'){var gd=el('g',{class:'guide'},b);el('circle',{cx:-11,cy:-11,r:6},gd);el('path',{d:'M-11 -14.5v4M-13.4 -9l2.4 -1.5l2.4 1.5'},gd)}
   var ck=el('g',{class:'check'},b);el('circle',{cx:11,cy:-11,r:7.5},ck);el('path',{d:'M7.3 -11l2.6 2.6 4.6-5.2'},ck);
-  var pos={r:[21,6,'start'],l:[-21,6,'end'],t:[0,-22,'middle'],b:[0,35,'middle'],tl:[-6,-22,'end'],bl:[-6,35,'end'],br:[6,35,'start']}[p.lp];
+  var pos=({r:[21,6,'start'],l:[-21,6,'end'],t:[0,-22,'middle'],b:[0,35,'middle'],tl:[-6,-22,'end'],bl:[-6,35,'end'],br:[6,35,'start']}[p.lp]).slice();
+  if(fd){pos[0]=pos[0]>0?pos[0]-6:pos[0]<0?pos[0]+6:0;pos[1]+=pos[1]>0?(pos[1]>10?-6:0):6}
   el('text',{class:'lbl'+(p.out?' out':''),x:pos[0],y:pos[1],'text-anchor':pos[2]},g).textContent=p.s||p.n;
   g.addEventListener('click',function(){pick(p.id)});
   g.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();pick(p.id)}});
@@ -762,8 +785,8 @@ function initReal(){
   L.control.layers(lc,null,{position:'topright'}).addTo(lmap);
   P.forEach(function(p){
     if(!p.ll)return;
-    var html='<div class="rm cat-'+p.c+'"><svg viewBox="-15 -15 30 30" width="30" height="30"><circle class="disc" r="14"/>'+glyphSvg(p.c)+'</svg><span class="rl">'+(p.s||p.n)+'</span></div>';
-    var m=L.marker(p.ll,{icon:L.divIcon({className:'rmk',html:html,iconSize:[30,30],iconAnchor:[15,15]}),title:p.n,keyboard:true}).addTo(lmap);
+    var fs=p.c==='food',html='<div class="rm cat-'+p.c+'"><svg viewBox="-15 -15 30 30" width="'+(fs?24:30)+'" height="'+(fs?24:30)+'"><circle class="disc" r="'+(fs?12:14)+'"/>'+(fs?'<path class="glyph" transform="scale(.85)" d="'+GLYPH.food+'"/>':glyphSvg(p.c))+'</svg><span class="rl">'+(p.s||p.n)+'</span></div>';
+    var m=L.marker(p.ll,{icon:L.divIcon({className:'rmk',html:html,iconSize:fs?[24,24]:[30,30],iconAnchor:fs?[12,12]:[15,15]}),title:p.n,keyboard:true}).addTo(lmap);
     m.on('click',function(){pick(p.id)});rmk[p.id]=m;
   });
   /* ซำระหว่างศรีฐานถึงหลังแป: ตามพิกัด Google Maps ที่ให้มา */
@@ -1247,8 +1270,8 @@ function select(id,center,keep){
     var im=h('img');im.alt='ภาพถ่าย '+p.n;im.src='photos/'+id+'.jpg';im.addEventListener('error',drawn);
     var cap=h('figcaption'),ln=h('a',null,'ภาพ: '+ph.by+' · '+ph.lic);ln.href=ph.page;ln.target='_blank';ln.rel='noopener';
     cap.appendChild(ln);fig.appendChild(im);fig.appendChild(cap);
-  }else drawn();
-  d.appendChild(fig);
+  }else if(p.c!=='food')drawn();
+  if(p.c!=='food')d.appendChild(fig);
   d.appendChild(row);d.appendChild(tags);d.appendChild(h('p','desc',p.desc));d.appendChild(tp);
   var vl=h('label','visit'+(visited[id]?' on':'')),vi=h('input');vi.type='checkbox';vi.id='visit-check';vi.checked=!!visited[id];
   vl.appendChild(vi);vl.appendChild(h('span',null,visited[id]?'ไปมาแล้ว':'ติ๊กเมื่อไปถึงแล้ว'));
