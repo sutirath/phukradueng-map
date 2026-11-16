@@ -88,6 +88,9 @@ button:active{transform:scale(.95)}
 .rm .glyph{fill:#fff}.rm .glyph.ln{fill:none;stroke:#fff;stroke-width:2.2}
 .rm .rl{position:absolute;left:50%;top:32px;transform:translateX(-50%);white-space:nowrap;font:600 13px var(--font);color:var(--ink);text-shadow:0 0 3px #fff,0 0 3px #fff,0 0 3px #fff,0 0 5px #fff;pointer-events:none}
 .lbloff .rm:not(.sel) .rl{display:none}
+.rm.sam{width:14px;height:14px}
+.rm.sam i{display:block;width:14px;height:14px;box-sizing:border-box;border-radius:50%;background:#fff;border:3px solid var(--primary-deep);box-shadow:0 0 0 2px rgba(255,255,255,.9)}
+.rm.sam .rl{top:16px;font-size:12px}
 .rm.sel .disc{stroke:var(--sky-600);stroke-width:4}
 .rm.dim{opacity:.3}
 .rm.done .disc{fill:#e5e7eb}.rm.done .glyph{fill:var(--body-text)}
@@ -697,6 +700,13 @@ function initReal(){
     var m=L.marker(p.ll,{icon:L.divIcon({className:'rmk',html:html,iconSize:[30,30],iconAnchor:[15,15]}),title:p.n,keyboard:true}).addTo(lmap);
     m.on('click',function(){select(p.id,true)});rmk[p.id]=m;
   });
+  /* ซำระหว่างศรีฐานถึงหลังแป: ตำแหน่งประมาณ วางเว้นระยะเท่ากันบนแนวตรง */
+  var a=byId.sithan.ll,z=byId.langpae.ll,line=[a];
+  ['ซำแฮก','ซำบอน','ซำกกกอก','ซำกกหว้า','ซำกกไผ่','ซำกกโดน','ซำแคร่'].forEach(function(name,i){
+    var t=(i+1)/8,ll=[a[0]+(z[0]-a[0])*t,a[1]+(z[1]-a[1])*t];line.push(ll);
+    L.marker(ll,{icon:L.divIcon({className:'rmk',html:'<div class="rm sam"><i></i><span class="rl">'+name+'</span></div>',iconSize:[14,14],iconAnchor:[7,7]}),interactive:false,keyboard:false}).addTo(lmap);
+  });
+  line.push(z);L.polyline(line,{color:'#2b7070',weight:3,dashArray:'6 8',opacity:.75,interactive:false}).addTo(lmap);
   lmap.on('zoomend',labelZoom);
   lmap.whenReady(function(){fitReal();labelZoom();setTimeout(paintReal,0)});
 }
