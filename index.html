@@ -200,7 +200,7 @@ button.hrow{cursor:pointer}
 .sam{fill:var(--surface);stroke:var(--primary);stroke-width:2}
 .lbl{font:500 17px var(--font);fill:var(--ink);paint-order:stroke;stroke:var(--plateau);stroke-width:5px;stroke-linejoin:round;pointer-events:none}
 .lbl.out{stroke:var(--mapbg)}
-.samlbl{font:500 15px var(--font);fill:var(--body-text);paint-order:stroke;stroke:var(--mapbg);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+.samlbl{font:500 13px var(--font);fill:var(--body-text);paint-order:stroke;stroke:var(--mapbg);stroke-width:4px;stroke-linejoin:round;pointer-events:none}
 .far .samlbl{display:none}
 .maptxt{font:500 14px var(--font);fill:var(--muted);pointer-events:none}
 .pin{cursor:pointer;outline:none}
@@ -500,9 +500,8 @@ button.hrow{cursor:pointer}
           <h3>ทางขึ้นภู: ศรีฐาน → หลังแป</h3>
           <p class="lead">เดินเท้าขึ้นเขา 5.5 กม. ราว 3–5 ชั่วโมง ทุก “ซำ” เป็นจุดพักที่มีร้านอาหาร น้ำดื่ม และห้องน้ำ จากหลังแปเดินทางราบต่อถึงศูนย์ฯ วังกวาง</p>
           <ol class="climb">
-            <li>ศรีฐาน</li><li>ซำแฮก</li><li>ซำบอน</li><li>ซำกกกอก</li><li>ซำกกหว้า</li><li>ซำกกไผ่</li><li>ซำกกโดน</li><li>ซำแคร่</li><li>หลังแป</li>
+            <li>ศรีฐาน</li><li>ปางกกค่า</li><li>ซำแฮก</li><li>ซำบอน</li><li>ซำกกกอก</li><li>ซำกอซาง</li><li>พร่านพรานแป</li><li>ซำกกหว้า</li><li>ซำกกไผ่</li><li>ซำกกโดน</li><li>ซำแคร่</li><li>หลังแป</li>
           </ol>
-          <p class="lead">ช่วงชันที่สุดคือช่วงแรกก่อนถึงซำแฮก และช่วงสุดท้ายจากซำแคร่ขึ้นหลังแป</p>
         </section>
         <section class="card">
           <h3>ควรรู้ก่อนไป</h3>
@@ -542,22 +541,22 @@ var P=[
 {id:'lomsak',ll:[16.8573,101.7475],llq:'est',n:'ผาหล่มสัก',c:'cliff',x:150,y:700,lp:'l',out:1,dist:'~9,360 ม.',seg:'จากผาแดง 2,420 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น. อยู่ได้ไม่เกิน 18.00 น.',
   desc:'สัญลักษณ์ของภูกระดึง ชะง่อนหินทรายยื่นออกไปกลางอากาศ มีต้นสนโดดเดี่ยวยืนคู่กัน มองเห็นทิวเขาซ้อนกันไกลสุดตา',
   tip:'เดินไป–กลับเกือบทั้งวัน ขากลับมืดแน่นอน ต้องพกไฟฉาย ตามกำหนดของอุทยานอยู่ที่ผาได้ไม่เกิน 18.00 น.'},
-{id:'daeng',ll:[16.8607,101.7649],llq:'est',n:'ผาแดง',c:'cliff',x:268,y:712,lp:'b',out:1,dist:'~6,940 ม.',seg:'จากผาเหยียบเมฆ 1,900 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'daeng',ll:[16.85983,101.7608],llq:'est',n:'ผาแดง',c:'cliff',x:268,y:712,lp:'b',out:1,dist:'~6,940 ม.',seg:'จากผาเหยียบเมฆ 1,900 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'หน้าผาหินทรายสีออกแดง จุดชมวิวกว้างก่อนถึงผาหล่มสัก คนน้อยกว่าและนั่งชมแสงเย็นได้สบาย',
   tip:'ถ้าไปไม่ทันผาหล่มสัก ชมพระอาทิตย์ตกที่นี่แทนได้'},
-{id:'yiapmek',ll:[16.8635,101.7786],llq:'est',n:'ผาเหยียบเมฆ',c:'cliff',x:388,y:696,lp:'b',out:1,dist:'~5,040 ม.',seg:'จากผานาน้อย 1,560 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'yiapmek',ll:[16.86182,101.77126],llq:'est',n:'ผาเหยียบเมฆ',c:'cliff',x:388,y:696,lp:'b',out:1,dist:'~5,040 ม.',seg:'จากผานาน้อย 1,560 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'หน้าผาที่ช่วงเช้าหน้าหนาวมักมีทะเลหมอกลอยอยู่ใต้เท้า เป็นที่มาของชื่อ',
   tip:'จุดพักกลางทางที่ดีบนเส้นทางเลียบผา'},
-{id:'nanoi',ll:[16.86575,101.789796],llq:'photo',n:'ผานาน้อย',c:'cliff',x:495,y:668,lp:'b',out:1,dist:'~3,480 ม.',seg:'จากผาจำศีล 550 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'nanoi',ll:[16.86345,101.77984],llq:'est',n:'ผานาน้อย',c:'cliff',x:495,y:668,lp:'b',out:1,dist:'~3,480 ม.',seg:'จากผาจำศีล 550 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'จุดชมวิวมองลงไปเห็นที่ราบและทุ่งนาเล็ก ๆ ด้านล่างภู บรรยากาศเงียบสงบ',
   tip:'แวะพักสั้น ๆ ระหว่างเดินเลียบผา'},
-{id:'jamsin',ll:[16.8666,101.7928],llq:'est',n:'ผาจำศีล',c:'cliff',x:595,y:648,lp:'t',dist:'~2,930 ม.',seg:'จากผาหมากดูก 670 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'jamsin',ll:[16.86402,101.78286],llq:'user',n:'ผาจำศีล',c:'cliff',x:595,y:648,lp:'t',dist:'~2,930 ม.',seg:'จากผาหมากดูก 670 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'ลานหินริมผาเงียบ ๆ ถัดจากผาหมากดูก เหมาะนั่งพักรับลมและชมวิวทิศใต้',
   tip:'เส้นทางเลียบผาช่วงนี้เดินและปั่นง่าย'},
-{id:'makduk',ll:[16.8676,101.7965],llq:'est',n:'ผาหมากดูก',c:'cliff',x:695,y:626,lp:'b',out:1,dist:'2,260 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'makduk',ll:[16.86566,101.78883],llq:'est',n:'ผาหมากดูก',c:'cliff',x:695,y:626,lp:'b',out:1,dist:'2,260 ม.',tag:'ชมพระอาทิตย์ตก',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'จุดชมพระอาทิตย์ตกที่ใกล้ที่พักที่สุดในกลุ่มผาริมทางเลียบผา ลานหินกว้าง',
   tip:'เหมาะกับวันแรกที่เพิ่งขึ้นถึงยอดภูและยังล้าอยู่'},
-{id:'maysa',ll:[16.8706,101.8068],llq:'est',n:'ผาเมษา',c:'cliff',x:775,y:606,lp:'b',out:1,dist:'~3,800 ม.',seg:'จากหลังแป 300 ม. · จากผาหมากดูก 1,900 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
+{id:'maysa',ll:[16.87032,101.80579],llq:'est',n:'ผาเมษา',c:'cliff',x:775,y:606,lp:'b',out:1,dist:'~3,800 ม.',seg:'จากหลังแป 300 ม. · จากผาหมากดูก 1,900 ม.',acc:'self',hrs:'โซนหน้าผาเริ่ม 08.00 น.',
   desc:'หน้าผาที่อยู่ใกล้หลังแปที่สุด เป็นจุดแรกของเส้นทางเลียบผาฝั่งตะวันออก',
   tip:'เดินต่อจากหลังแปได้ไม่ไกล เหมาะแวะก่อนลงเขา'},
 {id:'nokaen',ll:[16.893314,101.799873],llq:'photo',n:'ผานกแอ่น',c:'cliff',x:745,y:411,lp:'r',out:1,dist:'1,590 ม.',tag:'ชมพระอาทิตย์ขึ้น',acc:'guide',hrs:'05.00–07.00 น. (1 รอบ/วัน)',
@@ -606,6 +605,7 @@ var svg=$('map'), pins=$('pins'), pinEls={}, placeEls={};
 
 [[330,178],[348,192],[470,200],[505,216],[560,240],[598,266],[425,236],[385,300],[455,288],[482,322],[255,420],[285,452],[205,492],[140,508],[565,330],[640,362],[690,340],[215,524],[300,540],[160,562],[245,596],[290,630],[345,548],[480,562],[400,602],[525,596],[575,565],[705,545],[742,500],[772,522],[560,604],[450,626],[610,560],[720,590],[250,670]]
   .forEach(function(t){el('use',{href:'#tree',class:'tree',transform:'translate('+t[0]+' '+t[1]+')'},$('trees'))});
+var SAMS=['ปางกกค่า','ซำแฮก','ซำบอน','ซำกกกอก','ซำกอซาง','พร่านพรานแป','ซำกกหว้า','ซำกกไผ่','ซำกกโดน','ซำแคร่'];
 var EDGES={
   climb:{d:'M985 735C960 715 940 685 900 650C860 620 830 575 815 540',cat:'base',cls:'climb',lbl:'5,500 ม.',at:.5,off:[-40,14]},
   direct:{d:'M678 461C705 462 745 470 770 492C797 510 810 525 815 540',cat:'base',cls:'main',lbl:'3,500 ม.',at:.5},
@@ -638,8 +638,8 @@ var EDGES={
   });
   var path=el('path',{d:EDGES.climb.d,fill:'none'},$('sams')),len=path.getTotalLength();
   $('sams').removeChild(path);
-  ['ซำแฮก','ซำบอน','ซำกกกอก','ซำกกหว้า','ซำกกไผ่','ซำกกโดน','ซำแคร่'].forEach(function(name,i){
-    var pt=path.getPointAtLength(len*(i+1.5)/8.5),right=true;
+  SAMS.forEach(function(name,i){
+    var pt=path.getPointAtLength(len*(i+1.5)/(SAMS.length+1.5)),right=true;
     el('circle',{class:'sam',cx:pt.x.toFixed(1),cy:pt.y.toFixed(1),r:5},$('sams'));
     el('text',{class:'samlbl',x:(pt.x+(right?12:-12)).toFixed(1),y:(pt.y+5).toFixed(1),'text-anchor':right?'start':'end'},$('sams')).textContent=name;
   });
@@ -702,8 +702,8 @@ function initReal(){
   });
   /* ซำระหว่างศรีฐานถึงหลังแป: ตำแหน่งประมาณ วางเว้นระยะเท่ากันบนแนวตรง */
   var a=byId.sithan.ll,z=byId.langpae.ll,line=[a];
-  ['ซำแฮก','ซำบอน','ซำกกกอก','ซำกกหว้า','ซำกกไผ่','ซำกกโดน','ซำแคร่'].forEach(function(name,i){
-    var t=(i+1)/8,ll=[a[0]+(z[0]-a[0])*t,a[1]+(z[1]-a[1])*t];line.push(ll);
+  SAMS.forEach(function(name,i){
+    var t=(i+1)/(SAMS.length+1),ll=[a[0]+(z[0]-a[0])*t,a[1]+(z[1]-a[1])*t];line.push(ll);
     L.marker(ll,{icon:L.divIcon({className:'rmk',html:'<div class="rm sam"><i></i><span class="rl">'+name+'</span></div>',iconSize:[14,14],iconAnchor:[7,7]}),interactive:false,keyboard:false}).addTo(lmap);
   });
   line.push(z);L.polyline(line,{color:'#2b7070',weight:3,dashArray:'6 8',opacity:.75,interactive:false}).addTo(lmap);
@@ -1011,7 +1011,7 @@ function select(id,center,keep){
     vl.classList.toggle('on',vi.checked);vl.lastChild.textContent=vi.checked?'ไปมาแล้ว':'ติ๊กเมื่อไปถึงแล้ว';paintDone();
   });
   d.appendChild(vl);
-  if(p.ll)tags.appendChild(h('span','dist','📍 พิกัดบนแผนที่จริง: '+(p.llq==='photo'?'จากภาพถ่าย':'โดยประมาณ')));
+  if(p.ll)tags.appendChild(h('span','dist','📍 พิกัดบนแผนที่จริง: '+(p.llq==='photo'?'จากภาพถ่าย':p.llq==='user'?'ตามพิกัดที่ให้มา':'โดยประมาณ')));
   $('minibar').textContent=p.n+' · ดูรายละเอียด ›';
   var old=pins.querySelector('.pill');if(old)old.parentNode.removeChild(old);
   var lb=pinEls[id].querySelector('.lbl');
