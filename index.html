@@ -1437,20 +1437,36 @@ var ROUTE=[null,
  [['climb',1],['direct',-1]],
  [['nokaen',1],['lanpra',1],['thamyai',1],['w1',1],['w2',1],['w3',1],['w4',1],['wkmak',1],['c5',-1],['c4',-1],['c3',-1],['c2',-1],['c1',-1]],
  [['res',1],['direct',1],['climb',-1]]];
+/* แปลงพิกัดแผนผัง (x,y) เป็นละติจูด/ลองจิจูด: affine ที่ fit จากจุดอ้างอิง 39 จุดที่มีพิกัดจริง (คลาดเฉลี่ย ~17 ม.) */
+function xy2ll(x,y){return [4.3619994e-08*x-4.5548447e-05*y+16.953788,4.6970357e-05*x-8.913047e-08*y+101.69230958]}
+var edgeCache={};
+function edgeLL(k){
+  if(edgeCache[k])return edgeCache[k];
+  var pe=document.createElementNS('http://www.w3.org/2000/svg','path');pe.setAttribute('d',EDGES[k].d);
+  var L0=pe.getTotalLength(),out=[],n=Math.max(2,Math.ceil(L0/8)),i,q;
+  for(i=0;i<=n;i++){q=pe.getPointAtLength(L0*i/n);out.push(xy2ll(q.x,q.y))}
+  return edgeCache[k]=out;
+}
 var realRoute=null;
 function paintRealRoute(){
   if(!lmap)return;
   if(realRoute){lmap.removeLayer(realRoute);realRoute=null}
   if(!dayHL)return;
-  var c=DAYC[dayIdx],g=L.layerGroup(),all=[];
-  for(var i=0;i<dayIds.length-1;i++){
-    var tp=trailPath(dayIds[i],dayIds[i+1]),seg=[];
-    (tp?tp.path:[dayIds[i],dayIds[i+1]]).forEach(function(k){if(byId[k]&&byId[k].ll)seg.push(byId[k].ll)});
-    if(seg.length<2)seg=[byId[dayIds[i]].ll,byId[dayIds[i+1]].ll].filter(Boolean);
-    if(seg.length<2)continue;
+  var c=DAYC[dayIdx],g=L.layerGroup(),all=[],list=ROUTE[dayIdx];
+  function draw(seg){
     L.polyline(seg,{color:'#fff',weight:10,opacity:.9,interactive:false}).addTo(g);
     L.polyline(seg,{color:c,weight:5,opacity:.95,interactive:false}).addTo(g);
     all=all.concat(seg);
+  }
+  if(list){
+    var done={};
+    list.forEach(function(r){if(done[r[0]])return;done[r[0]]=1;draw(edgeLL(r[0]))});
+  }else{
+    for(var i=0;i<dayIds.length-1;i++){
+      var tp=trailPath(dayIds[i],dayIds[i+1]),seg=[];
+      (tp?tp.path:[dayIds[i],dayIds[i+1]]).forEach(function(k){if(byId[k]&&byId[k].ll)seg.push(byId[k].ll)});
+      if(seg.length>=2)draw(seg);
+    }
   }
   dayIds.forEach(function(id,i){
     var p=byId[id];if(!p||!p.ll)return;
