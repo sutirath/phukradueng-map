@@ -823,7 +823,7 @@ function initReal(){
   });
   line.push(z);L.polyline(line,{color:'#2b7070',weight:3,dashArray:'6 8',opacity:.8,interactive:false}).addTo(lmap);
   lmap.on('zoomend',labelZoom);
-  lmap.whenReady(function(){fitReal();labelZoom();setTimeout(paintReal,0);if(me)paintMe(false);paintRule()});
+  lmap.whenReady(function(){fitReal();labelZoom();setTimeout(paintReal,0);if(me)paintMe(false);paintRule();paintRealRoute()});
 }
 function setReal(on){
   realMode=on;
@@ -1437,10 +1437,32 @@ var ROUTE=[null,
  [['climb',1],['direct',-1]],
  [['nokaen',1],['lanpra',1],['thamyai',1],['w1',1],['w2',1],['w3',1],['w4',1],['wkmak',1],['c5',-1],['c4',-1],['c3',-1],['c2',-1],['c1',-1]],
  [['res',1],['direct',1],['climb',-1]]];
+var realRoute=null;
+function paintRealRoute(){
+  if(!lmap)return;
+  if(realRoute){lmap.removeLayer(realRoute);realRoute=null}
+  if(!dayHL)return;
+  var c=DAYC[dayIdx],g=L.layerGroup(),all=[];
+  for(var i=0;i<dayIds.length-1;i++){
+    var tp=trailPath(dayIds[i],dayIds[i+1]),seg=[];
+    (tp?tp.path:[dayIds[i],dayIds[i+1]]).forEach(function(k){if(byId[k]&&byId[k].ll)seg.push(byId[k].ll)});
+    if(seg.length<2)seg=[byId[dayIds[i]].ll,byId[dayIds[i+1]].ll].filter(Boolean);
+    if(seg.length<2)continue;
+    L.polyline(seg,{color:'#fff',weight:10,opacity:.9,interactive:false}).addTo(g);
+    L.polyline(seg,{color:c,weight:5,opacity:.95,interactive:false}).addTo(g);
+    all=all.concat(seg);
+  }
+  dayIds.forEach(function(id,i){
+    var p=byId[id];if(!p||!p.ll)return;
+    L.marker(p.ll,{icon:L.divIcon({className:'rseq',html:'<b style="display:flex;width:20px;height:20px;border-radius:50%;background:#111827;color:#fff;border:1.5px solid #fff;font:700 11px sans-serif;align-items:center;justify-content:center">'+(i+1)+'</b>',iconSize:[20,20],iconAnchor:[28,26]}),interactive:false,keyboard:false}).addTo(g);
+  });
+  g.addTo(lmap);realRoute=g;realRoute._pts=all;
+}
 function paintRoute(){
   var g=$('route');g.innerHTML='';
   pins.querySelectorAll('.seq').forEach(function(n){n.parentNode.removeChild(n)});
   $('trails').classList.toggle('muted',!!dayHL);
+  paintRealRoute();
   if(!dayHL)return;
   var c=DAYC[dayIdx],list=ROUTE[dayIdx];
   if(list){
@@ -1494,6 +1516,7 @@ function paintSheetPlan(){
 }
 function frameDay(){
   requestAnimationFrame(function(){
+    if(realMode&&lmap){lmap.invalidateSize();paintRealRoute();var pts=realRoute&&realRoute._pts;if(pts&&pts.length)lmap.fitBounds(L.latLngBounds(pts),{padding:[50,50]});if(dayIds.indexOf(selected)<0)select(dayIds[0],false,true);return}
     measure();
     var xs=dayIds.map(function(id){return byId[id].x}),ys=dayIds.map(function(id){return byId[id].y});
     var x0=Math.min.apply(0,xs)-110,x1=Math.max.apply(0,xs)+110,y0=Math.min.apply(0,ys)-120,y1=Math.max.apply(0,ys)+80;
