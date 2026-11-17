@@ -448,7 +448,7 @@ button.hrow{cursor:pointer}
         </svg>
         <div id="realmap" hidden></div>
         <div class="mapseg" id="mapseg" role="group" aria-label="ชนิดแผนที่" hidden>
-          <button type="button" id="seg-plan" aria-pressed="true">แผนผัง</button>
+          <button type="button" id="seg-plan" aria-pressed="false">แผนผัง</button>
           <button type="button" id="seg-real" aria-pressed="false">แผนที่จริง</button>
         </div>
         <div class="chips floating" id="chips" role="group" aria-label="กรองประเภทสถานที่"></div>
@@ -1568,6 +1568,7 @@ requestAnimationFrame(function(){
   measure();var p=byId[selected];
   view={cx:p.x,cy:p.y,z:homeZ()};draw();
 });
+if(window.PK_REAL&&window.L)setReal(true);
 })();
 </script>
 
